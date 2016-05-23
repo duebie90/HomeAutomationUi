@@ -1,12 +1,13 @@
 #include "endpoint.h"
 
-Endpoint::Endpoint(QTcpSocket* socket, QString alias, QString type, QString MAC="")
+Endpoint::Endpoint(QTcpSocket* socket, QString alias, QString type, QString MAC, QObject* parent):
+    QObject(parent)
 {
-    cout<<"Endpoint-Object created with alias "<<alias.toStdString()<<" and type "<<type.toStdString()<<".\n";
     this->clientSocket = socket;
     this->alias = alias;
     this->type = type;
     this->MAC = MAC;
+    this->state = false;
     if(socket != NULL) {
         connect(clientSocket, SIGNAL(readyRead()), this, SLOT(slotReceivedData()));
         connect(clientSocket, SIGNAL(disconnected()), this, SLOT(slotDisconnected()));
@@ -20,6 +21,10 @@ void Endpoint::slotReceivedData() {
     QHostAddress remoteAddress = clientSocket->peerAddress();
     cout<<__FUNCTION__<<"\n";
     cout<<"Alias: "<<alias.toStdString()<<" IP:"<<remoteAddress.toString().toStdString()<<" data:"<<message.toStdString()<<"\n";
+}
+
+void Endpoint::sendMessage(QByteArray message){
+    this->clientSocket->write(message, message.length());
 }
 
 void Endpoint::slotDisconnected() {
@@ -36,6 +41,9 @@ void Endpoint::updateSocket(QTcpSocket* newSocket) {
 bool Endpoint::isConnected() {
     return this->connected;
 }
+void Endpoint::setConnected(bool connected){
+    this->connected = connected;
+}
 
 QString Endpoint::getAlias() {
     return alias;
@@ -45,4 +53,10 @@ QString Endpoint::getType() {
 }
 QString Endpoint::getMAC() {
     return MAC;
+}
+bool Endpoint::getState() {
+    return this->state;
+}
+void Endpoint::setState(bool state) {
+    this->state = state;
 }

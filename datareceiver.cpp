@@ -1,4 +1,5 @@
 #include "datareceiver.h"
+#include <../HomeAutomationServer/messagetype.h>
 
 DataReceiver::DataReceiver(QObject* parent):
     QObject(parent)
@@ -20,7 +21,7 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
     QByteArray payload, splitOfPayload;
     QList<QByteArray>  messageParts;
     MessageType messageType;
-    int payloadLength=0;
+    quint16 payloadLength=0;
 
     //check if StartOfHeader Code is at(0)
     if (data.at(0) != 0x01)
@@ -28,9 +29,9 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
     messageType = (MessageType)data.at(1); //second Byte
     QByteArray lengthBytes= data.mid(2,2);
 
-    payloadLength |= (lengthBytes.at(0));
+    payloadLength |= (quint8)(lengthBytes.at(0));
     payloadLength = payloadLength << 8;
-    payloadLength |= (lengthBytes.at(1));
+    payloadLength |= (quint8)(lengthBytes.at(1));
 
     //get payload section (from 0x02 ..0x03)
     messageParts = data.split(0x02);
@@ -56,13 +57,14 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
 
 void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     QList<Endpoint*> endpointsUpdate;
-    QString alias, MAC, endpointType;
+    QString alias, MAC, endpointType, state, connected;
+
     Endpoint* newEndpoint;
     //0x1F = unit separator
     QList<QByteArray> payloadParts = payload.split(0x1F);
 
     switch(type) {
-    case MessageType::ENDPOINT_LIST:
+    case MESSAGETYPE_ENDPOINT_INFO:
         if( payloadParts.length() < 3 ) {
             qDebug()<<"Faulty payload";
             return;
@@ -76,12 +78,38 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
         emit signalReceivedEndpointList(endpointsUpdate);
         break;
 
-    case MessageType::ENDPOINT_SCHEDULES_LIST:
-    case MessageType::ENDPOINT_STATES_LIST:
+    case MESSAGETYPE_ENDPOINTS_STATES_LIST:
+        qDebug()<<"Number of Payload Parts: "<<payloadParts.length();
+        for(int i= 0; i< (payloadParts.length()) ; i+=5) {
+            if(payloadParts.length() >= i+5) {
+            alias   =   payloadParts.at(i + 0);
+            MAC     =   payloadParts.at(i + 1);
+            endpointType = payloadParts.at(i + 2);
+            state = payloadParts.at(i + 3);
+            connected = payloadParts.at(i + 4);
+            newEndpoint = new Endpoint(NULL, alias, endpointType, MAC);
+            if(state == "1") {
+                newEndpoint->setState(true);
+            }
+            else {
+                    newEndpoint->setState(false);
+            }
+            if(connected == "0"){
+                newEndpoint->setConnected(false);
+            } else if(connected == "1") {
+                newEndpoint->setConnected(true);
+            }
+            endpointsUpdate.append(newEndpoint);}
+            else {
+                qDebug()<<__FUNCTION__<<"Message error. Data incomplete";
+            }
+        }
+        emit signalReceivedEndpointList(endpointsUpdate);
+        break;
+    case MESSAGETYPE_UI_INFO:
     default:
         qDebug()<<__FUNCTION__<<"Unrecognized MessageType";
     }
-
 }
 
 

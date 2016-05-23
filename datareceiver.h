@@ -3,17 +3,15 @@
 
 #include <QObject>
 #include <endpoint.h>
+#include <../HomeAutomationServer/messagetype.h>
+
 
 class DataReceiver: public QObject
 {
     Q_OBJECT
 public:
     DataReceiver(QObject* parent=0);
-    enum MessageType{
-        ENDPOINT_LIST = 0x21,
-        ENDPOINT_STATES_LIST= 0x22,
-        ENDPOINT_SCHEDULES_LIST = 0x23
-    };
+
 public slots:
     void slotReceivedData(QByteArray data);
 signals:

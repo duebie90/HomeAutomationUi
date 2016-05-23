@@ -4,6 +4,7 @@
 #include <QNetworkSession>
 #include <QDebug>
 #include <QMessageBox>
+#include <QTime>
 Client::Client()
 {
     this->tcpSocket = new QTcpSocket(this);
@@ -19,12 +20,9 @@ Client::Client()
 }
 
 void Client::slotDisplayError(QAbstractSocket::SocketError socketError) {
-        qDebug()<<__FUNCTION__;
-        QMessageBox msgBox;
+        qDebug()<<__FUNCTION__;        
         msgBox.setStandardButtons(QMessageBox::Ok);
-        switch (socketError) {
-        case QAbstractSocket::RemoteHostClosedError:
-            break;
+        switch (socketError) {        
         case QAbstractSocket::HostNotFoundError:
             msgBox.setText(tr("The host was not found. Please check the "
                                         "host name and port settings."));
@@ -35,11 +33,17 @@ void Client::slotDisplayError(QAbstractSocket::SocketError socketError) {
                                         "and check that the host name and port "
                                         "settings are correct."));
             break;
+         case QAbstractSocket::RemoteHostClosedError:
+            msgBox.setText(tr("Connection closed unexpectedly. Eventually the server was stopped or lost power."));
+            break;
         default:
             msgBox.setText(tr("The following error occurred: %1.")
                                      .arg(tcpSocket->errorString()));
         };
-        msgBox.exec();
+        QTimer::singleShot(2000, this, SLOT(slotCloseMsgBox()) );
+        msgBox.show();
+        //msgBox.exec();
+        msgBox.setFocus();
 
 }
 
@@ -75,7 +79,7 @@ void Client::slotConnectToHost(QHostAddress hostAdress, quint16 port) {
     this->tcpSocket->connectToHost(hostAdress, port);
 }
 
-void Client::slotSend(QString data) {
+void Client::slotSend(QByteArray data) {
     qDebug()<<__FUNCTION__;
     QByteArray toSend;
     toSend.append(data);
@@ -87,4 +91,14 @@ void Client::slotDisconnect() {
 
 bool Client::isConnected() {
     return this->tcpSocket->isOpen();
+}
+
+int Client::send(QByteArray data) {
+    QByteArray toSend;
+    toSend.append(data);
+    return tcpSocket->write(toSend);
+}
+
+void Client::slotCloseMsgBox() {
+    this->msgBox.close();
 }

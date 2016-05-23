@@ -25,10 +25,10 @@ HEADERS  += mainwindow.h \
     endpoint.h \
     datareceiver.h \
     datatransmitter.h \
-    endpointwidget.h
+    endpointwidget.h \
+    ../HomeAutomationServer/messagetype.h
 
 FORMS    += mainwindow.ui \
     endpointwidget.ui
 
-DISTFILES += \
-    yellow-home-16_0.ico
+RC_FILE = uiPrototype.rc

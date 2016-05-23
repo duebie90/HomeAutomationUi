@@ -5,6 +5,9 @@
 #include <QStringListModel>
 
 #include <endpointwidget.h>
+#include <datatransmitter.h>
+
+#define EW_MAX_COLS 4
 
 MainWindow::MainWindow(Client* client, QWidget *parent) :
     QMainWindow(parent),
@@ -13,24 +16,32 @@ MainWindow::MainWindow(Client* client, QWidget *parent) :
     ui->setupUi(this);
     //save a reference to Client-Object
     this->client = client;
+    this->dataTransmitter = DataTransmitter::getInstance();
+    this->dataTransmitter->setClient(client);
+
 
     //UI connections
-    connect(ui->buConnect, SIGNAL(clicked(bool)), this, SLOT(slotConnect(bool)));
-    connect(ui->buSend, SIGNAL(clicked(bool)), this, SLOT(slotSend(bool)));
-
-    this->endpointsTable = this->ui->tableEndpoints;
+    connect(ui->buConnect, SIGNAL(clicked(bool)), this, SLOT(slotConnect(bool)));   
+    connect(ui->actionQuit, SIGNAL(triggered(bool)), this, SLOT(slotQuit()));
+    connect(ui->actionResetServer, SIGNAL(triggered(bool)), this, SLOT(slotResetServer()));
+    connect(ui->actionResetUi, SIGNAL(triggered(bool)), this, SLOT(slotResetUI()));
 
     ui->lePort->setValidator(new QIntValidator(1, 65535, this));
 
-    //EndpointWidget* ew = new EndpointWidget("Licht Wohnzimmer", "192.168.2.1", "12:25:30:FF");
-    //this->ui->grid_endpointWidgets->addWidget(ew, 0, 0);
-    //ew = new EndpointWidget("Außensteckdose", "192.168.2.125", "05:00:30:7E");
-    //this->ui->grid_endpointWidgets->addWidget(ew, 0, 1);
+    this->ui->horizontalLayoutEndpointWidgets_lower->setGeometry(ui->hBoxLowerFrame->geometry());
+    this->ui->horizontalLayoutEndpointWidgets_upper->setGeometry(ui->hBoxUpperFrane->geometry());
+    qDebug()<<ui->horizontalLayoutEndpointWidgets_upper->geometry();
+    qDebug()<<ui->hBoxLowerFrame->geometry();
+    qDebug()<<ui->horizontalLayoutEndpointWidgets_lower->geometry();
+    //restore previous window settings
 
-}
+    QSettings settings(QDir::currentPath() + "/settings.ini",  QSettings::IniFormat);
+    //this->settings.setPath(QSettings::IniFormat, QSettings::UserScope, QApplication::applicationDirPath() );
+    settings.beginGroup("MainWindow");
+    resize(settings.value("size", QSize(400, 400)).toSize());
+    move(settings.value("pos", QPoint(200, 200)).toPoint());
+    settings.endGroup();
 
-void MainWindow::slotSend(bool) {
-    emit signalSend(ui->leToSend->text());
 }
 
 void MainWindow::slotConnect(bool) {
@@ -59,6 +70,8 @@ void MainWindow::slotConnect(bool) {
 void MainWindow::slotConnected() {
     this->ui->buConnect->setText("trennen");
     this->ui->buConnect->setStyleSheet("background-color:green");
+    this->dataTransmitter->sendIdent();
+    clearEndpointsGrid();
 }
 
 void MainWindow::slotDisconnected() {
@@ -70,33 +83,10 @@ void MainWindow::slotDisconnected() {
 void MainWindow::slotReceivedEndpointList(QList<Endpoint *> endpointsUpdate) {
     qDebug()<<__FUNCTION__;
     this->endpoints = endpointsUpdate;
-    updateTable();
+    updateTable(endpointsUpdate);
 }
 
 void MainWindow::parseBasicEndpointInfo(QString message) {
-    QString alias, type, MAC;
-
-            //Preliminary message structure:
-            //HaC-Endpoint-Basic-Info_alias="abc"_type=switchbox_MAC=10:10:10:10:10:10
-            QStringList messageParts = message.split("_", QString::SplitBehavior::SkipEmptyParts);
-    if (messageParts.length()>=4) {
-        QStringList splitOfAlias = messageParts.at(1).split("alias=", QString::SplitBehavior::SkipEmptyParts);
-        if (splitOfAlias.length() > 0)
-            alias = splitOfAlias.at(0);
-        QStringList splitOfType = messageParts.at(2).split("type=", QString::SplitBehavior::SkipEmptyParts);
-        if (splitOfType.length()>0)
-            type = splitOfType.at(0);
-        QStringList splitOfMAC = messageParts.at(3).split("MAC=", QString::SplitBehavior::SkipEmptyParts);
-        if (splitOfMAC.length()>0) {
-            if (splitOfMAC.at(0).length()==17) {
-                MAC = splitOfMAC.at(0);
-            }
-        }
-        if (alias != "" && type!="" && MAC != "") {
-            addEndpoint(alias, type, MAC);
-            updateTable();
-        }
-    }
 }
 
 void MainWindow::addEndpoint(QString alias, QString type, QString MAC) {
@@ -104,47 +94,107 @@ void MainWindow::addEndpoint(QString alias, QString type, QString MAC) {
     this->endpoints.append(newEndpoint);
 }
 
-void MainWindow::updateTable() {
-    QModelIndex index;
-    int row = 0;    
+void MainWindow::updateTable(QList<Endpoint *> endpointsUpdate) {
+    //update existing
+    foreach(EndpointWidget* ew, this->endpointWidgets) {
+        bool endpointPresent = false;
+        foreach(Endpoint* endpoint, endpointsUpdate) {
+            if (endpoint->getMAC() == ew->getMac()) {
+                //one of the endpoints from the list has the same MAC
+                endpointPresent = true;
+            }
+        }
+        if (!endpointPresent){
+            //delete this endpoint Widget
+            ew->hide();
+            this->ui->horizontalLayoutEndpointWidgets_upper->removeWidget(ew);
+            this->ui->horizontalLayoutEndpointWidgets_lower->removeWidget(ew);
+            this->endpointWidgets.removeOne(ew);
+            this->mapMacToEndpointWidget.remove(ew->getMac());
+        }
+    }
 
-    clearEndpointsGrid();
-    //then rebuild contents
-    foreach(Endpoint* endpoint, this->endpoints) {        
-       QString alias    = endpoint->getAlias();
-       QString type     = endpoint->getType();
-       QString MAC      = endpoint->getMAC();
 
-       EndpointWidget* ew = new EndpointWidget(alias, MAC, type);
-       this->ui->grid_endpointWidgets->addWidget(ew);
-       this->mapMacToEndpointWidget.insert(MAC, ew);
-       /*index = tableDataModel->index(row, 0, QModelIndex());
-       tableDataModel->setData(index, alias);
-       index = tableDataModel->index(row, 1, QModelIndex());
-       tableDataModel->setData(index, type);
-       index = tableDataModel->index(row, 4, QModelIndex());
-       tableDataModel->setData(index, MAC);
-       row++;*/
-    }   
-}
-
-void MainWindow::clearEndpointsGrid() {
-    //clean up first
-    QGridLayout* gl = this->ui->grid_endpointWidgets;
-    int rowCount = gl->rowCount();
-    int colCount = gl->columnCount();
-
-    for(int row=0; row<rowCount; row++) {
-        for(int col=0; col<colCount; col++) {
-            QLayoutItem* item = gl->itemAtPosition(row, col);
-            if(item) {
-                item->widget()->hide();
-                delete(item->widget());
+    foreach(Endpoint* endpoint, endpointsUpdate) {
+        if(this->mapMacToEndpointWidget.contains(endpoint->getMAC())) {
+            //a widget for this endpoint already exists-->get Widget
+            EndpointWidget* ew = this->mapMacToEndpointWidget.value(endpoint->getMAC());
+            //update its content
+            ew->setEndpoint(endpoint);
+            ew->updateWidget();
+            ew->repaint();
+            this->ui->horizontalLayoutEndpointWidgets_upper->update();
+        } else {
+            //new endpoint; create a new Widget and add
+            EndpointWidget* ew = new EndpointWidget(endpoint);
+            //this->ui->grid_endpointWidgets->addWidget(ew);
+            this->endpointWidgets.append(ew);
+            this->mapMacToEndpointWidget.insert(endpoint->getMAC(), ew);
+            connect(ew, SIGNAL(signalRequestStateChange(QString,bool)),
+                    this, SLOT(slotRequestStateChange(QString,bool)));
+            int row=0;
+            if (this->endpointWidgets.length()>4) {
+                row=1;
+            }
+            if(row==0) {
+                int col = this->endpointWidgets.length()-1;
+                this->ui->horizontalLayoutEndpointWidgets_upper->insertWidget(col, ew);
+            }else if(row==1){
+                int col = this->endpointWidgets.length() -EW_MAX_COLS - 1;
+                this->ui->horizontalLayoutEndpointWidgets_lower->insertWidget(col, ew);
             }
         }
     }
 }
 
+void MainWindow::clearEndpointsGrid() {
+    //clean up first
+    QList<QHBoxLayout*> hBoxLayouts;
+    hBoxLayouts.append(this->ui->horizontalLayoutEndpointWidgets_upper);
+    hBoxLayouts.append(this->ui->horizontalLayoutEndpointWidgets_lower);
+    QLayoutItem* item;
+    int colCount = ui->horizontalLayoutEndpointWidgets_upper->count();
+    for(int row=0; row<2; row++) {
+        colCount = hBoxLayouts.at(row)->count();
+        for(int col=0; col<colCount; col++) {
+            item = hBoxLayouts.at(row)->itemAt(hBoxLayouts.at(row)->count()-1);
+            if(item) {
+                //If item exists...
+                EndpointWidget* ew = (EndpointWidget*)item->widget();
+                ew->hide();
+                hBoxLayouts.at(row)->removeWidget(ew);
+                this->endpointWidgets.removeOne(ew);
+            }
+        }
+    }
+    this->mapMacToEndpointWidget.clear();
+}
+void MainWindow::slotRequestStateChange(QString MAC, bool state) {
+    this->dataTransmitter->sendStateRequestDigital(MAC, state);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    QSettings settings(QDir::currentPath() + "/settings.ini",  QSettings::IniFormat);
+    settings.beginGroup("MainWindow");
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.endGroup();
+}
+
+void MainWindow::slotQuit() {
+    qDebug()<<__FUNCTION__;
+    //save current window settings
+    emit signalQuit();
+    this->close();
+}
+
+void MainWindow::slotResetServer() {
+    this->dataTransmitter->sendServerResetRequest();
+}
+
+void MainWindow::slotResetUI() {
+    clearEndpointsGrid();
+}
 
 MainWindow::~MainWindow()
 {
