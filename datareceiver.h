@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <endpoint.h>
-#include <../HomeAutomationServer/messagetype.h>
+#include <../HomeAutomationServer/HomeAutomation-Network/messagetype.h>
 
 
 class DataReceiver: public QObject

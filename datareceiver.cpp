@@ -1,5 +1,5 @@
 #include "datareceiver.h"
-#include <../HomeAutomationServer/messagetype.h>
+#include <../HomeAutomationServer/HomeAutomation-Network/messagetype.h>
 
 DataReceiver::DataReceiver(QObject* parent):
     QObject(parent)
@@ -29,7 +29,10 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
     messageType = (MessageType)data.at(1); //second Byte
     QByteArray lengthBytes= data.mid(2,2);
 
-    payloadLength |= (quint8)(lengthBytes.at(0));
+    if(lengthBytes.at(0) != -1) {
+        //0xFF stands for 0x00, 0 makes trouble in c strings
+        payloadLength |= (quint8)(lengthBytes.at(0));
+    }
     payloadLength = payloadLength << 8;
     payloadLength |= (quint8)(lengthBytes.at(1));
 
@@ -64,7 +67,7 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     QList<QByteArray> payloadParts = payload.split(0x1F);
 
     switch(type) {
-    case MESSAGETYPE_ENDPOINT_INFO:
+    case MESSAGETYPE_ENDPOINT_IDENT:
         if( payloadParts.length() < 3 ) {
             qDebug()<<"Faulty payload";
             return;

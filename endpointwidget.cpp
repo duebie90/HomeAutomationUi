@@ -1,7 +1,7 @@
 #include "endpointwidget.h"
 #include "ui_endpointwidget.h"
 #include <endpoint.h>
-#include <../HomeAutomationServer/messagetype.h>
+#include <../HomeAutomationServer/HomeAutomation-Network/messagetype.h>
 //#include <datatransmitter.h>
 
 

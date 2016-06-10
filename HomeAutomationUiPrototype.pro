@@ -26,7 +26,7 @@ HEADERS  += mainwindow.h \
     datareceiver.h \
     datatransmitter.h \
     endpointwidget.h \
-    ../HomeAutomationServer/messagetype.h
+    ../HomeAutomationServer/HomeAutomation-Network/messagetype.h
 
 FORMS    += mainwindow.ui \
     endpointwidget.ui
