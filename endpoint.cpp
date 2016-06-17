@@ -18,8 +18,7 @@ Endpoint::Endpoint(QTcpSocket* socket, QString alias, QString type, QString MAC,
 void Endpoint::slotReceivedData() {
     QByteArray data = this->clientSocket->readAll();
     QString message = QString(data);
-    QHostAddress remoteAddress = clientSocket->peerAddress();
-    cout<<__FUNCTION__<<"\n";
+    QHostAddress remoteAddress = clientSocket->peerAddress();    
     cout<<"Alias: "<<alias.toStdString()<<" IP:"<<remoteAddress.toString().toStdString()<<" data:"<<message.toStdString()<<"\n";
 }
 
@@ -28,12 +27,10 @@ void Endpoint::sendMessage(QByteArray message){
 }
 
 void Endpoint::slotDisconnected() {
-    cout<<__FUNCTION__<<" Alias "<<this->alias.toStdString()<<"\n";
     this->connected = false;
 }
 
 void Endpoint::updateSocket(QTcpSocket* newSocket) {
-    cout<<__FUNCTION__<<"Alias "<<this->alias.toStdString()<<"\n";
     this->clientSocket = newSocket;
     this->connected = true;
 }

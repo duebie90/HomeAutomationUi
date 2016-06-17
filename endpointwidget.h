@@ -25,6 +25,12 @@ private slots:
     void slotUpdateBlockFinished();
 signals:
     void signalRequestStateChange(QString MAC, bool state);
+    void signalClickedBackground(Endpoint* endpoint);
+  protected:
+    virtual void mousePressEvent(QMouseEvent *event);
+
+
+
 private:
     Ui::EndpointWidget *ui;
     QString MAC;

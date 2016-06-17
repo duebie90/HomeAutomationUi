@@ -59,30 +59,16 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
 }
 
 void DataReceiver::processMessage(MessageType type, QByteArray payload) {
-    QList<Endpoint*> endpointsUpdate;
     QString alias, MAC, endpointType, state, connected;
-
+    QList<Endpoint*> endpointsUpdate;
     Endpoint* newEndpoint;
     //0x1F = unit separator
     QList<QByteArray> payloadParts = payload.split(0x1F);
 
     switch(type) {
     case MESSAGETYPE_ENDPOINT_IDENT:
-        if( payloadParts.length() < 3 ) {
-            qDebug()<<"Faulty payload";
-            return;
-        }
-        alias   =   payloadParts.at(0);
-        MAC     =   payloadParts.at(1);
-        endpointType = payloadParts.at(2);
-
-        newEndpoint = new Endpoint(NULL, alias, endpointType, MAC);
-        endpointsUpdate.append(newEndpoint);
-        emit signalReceivedEndpointList(endpointsUpdate);
         break;
-
     case MESSAGETYPE_ENDPOINTS_STATES_LIST:
-        qDebug()<<"Number of Payload Parts: "<<payloadParts.length();
         for(int i= 0; i< (payloadParts.length()) ; i+=5) {
             if(payloadParts.length() >= i+5) {
             alias   =   payloadParts.at(i + 0);

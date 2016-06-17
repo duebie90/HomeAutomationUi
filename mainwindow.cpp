@@ -11,7 +11,8 @@
 
 MainWindow::MainWindow(Client* client, QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    endpointWindow(NULL)
 {
     ui->setupUi(this);
     //save a reference to Client-Object
@@ -80,29 +81,56 @@ void MainWindow::slotDisconnected() {
 }
 
 //void MainWindow::slotReceivedData(QString message) {
-void MainWindow::slotReceivedEndpointList(QList<Endpoint *> endpointsUpdate) {
-    qDebug()<<__FUNCTION__;
-    this->endpoints = endpointsUpdate;
-    updateTable(endpointsUpdate);
+void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
+
+    //TdoDoif(mapMacToEndpoints.keys().contains(MAC)) {
+    //update concerning
+    foreach(Endpoint* endpoint, endpointsUpdate) {
+
+        if (!this->mapMac2endpoints.keys().contains(endpoint->getMAC())) {
+            //this one is new
+            this->mapMac2endpoints.insert(endpoint->getMAC(), endpoint);
+        }
+        else {
+            Endpoint* endpoint2Update = this->mapMac2endpoints.value(endpoint->getMAC());
+            if (endpoint2Update != NULL) {
+                //do the update stuff
+                endpoint2Update->setState( endpoint->getState());
+                endpoint2Update->setConnected( endpoint->isConnected());
+
+            }
+        }
+    }
+
+    updateTable();
+    if (this->endpointWindow == NULL && this->mapMac2endpoints.size() > 0) {
+        this->endpointWindow = new QmlEndpointWidget(this->mapMac2endpoints.values().at(0));
+        connect(endpointWindow, SIGNAL(signalRequestStateChange(QString,bool)),
+                this, SLOT(slotRequestStateChange(QString,bool)));
+        this->endpointWindow->setGeometry(this->x()+ this->width() +10, this->y(), 800, 600);
+        this->endpointWindow->showQml();
+        this->endpointWindow->show();
+    }
+    if(this->endpointWindow){
+        this->endpointWindow->slotEndpointChanged();
+    }
 }
 
 void MainWindow::parseBasicEndpointInfo(QString message) {
 }
 
 void MainWindow::addEndpoint(QString alias, QString type, QString MAC) {
-    Endpoint* newEndpoint = new Endpoint(NULL, alias, type, MAC);
-    this->endpoints.append(newEndpoint);
+   // Endpoint* newEndpoint = new Endpoint(NULL, alias, type, MAC);
+   // this->endpoints.append(newEndpoint);
 }
 
-void MainWindow::updateTable(QList<Endpoint *> endpointsUpdate) {
-    //update existing
+void MainWindow::updateTable() {
+    //delete widget of endpoint which do not exist any more
     foreach(EndpointWidget* ew, this->endpointWidgets) {
         bool endpointPresent = false;
-        foreach(Endpoint* endpoint, endpointsUpdate) {
-            if (endpoint->getMAC() == ew->getMac()) {
-                //one of the endpoints from the list has the same MAC
-                endpointPresent = true;
-            }
+        if (this->mapMac2endpoints.keys().contains(ew->getMac())) {
+            //one of the endpoints from the list has the same MAC
+            endpointPresent = true;
         }
         if (!endpointPresent){
             //delete this endpoint Widget
@@ -115,23 +143,26 @@ void MainWindow::updateTable(QList<Endpoint *> endpointsUpdate) {
     }
 
 
-    foreach(Endpoint* endpoint, endpointsUpdate) {
-        if(this->mapMacToEndpointWidget.contains(endpoint->getMAC())) {
-            //a widget for this endpoint already exists-->get Widget
-            EndpointWidget* ew = this->mapMacToEndpointWidget.value(endpoint->getMAC());
-            //update its content
-            ew->setEndpoint(endpoint);
-            ew->updateWidget();
-            ew->repaint();
-            this->ui->horizontalLayoutEndpointWidgets_upper->update();
-        } else {
+    //create new if necessary
+    //QList<QString> abc = this->mapMac2endpoints.keys;
+    foreach(QString mac, this->mapMac2endpoints.keys()) {
+        if (this->mapMacToEndpointWidget.keys().contains(mac)) {
+           EndpointWidget* ew = this->mapMacToEndpointWidget.value(mac);
+           if(ew != NULL) {
+               ew->updateWidget();
+               ew->repaint();
+           }
+        }
+        else {
             //new endpoint; create a new Widget and add
-            EndpointWidget* ew = new EndpointWidget(endpoint);
+            Endpoint* newEndpoint = this->mapMac2endpoints.value(mac);
+            EndpointWidget* ew = new EndpointWidget(newEndpoint);
             //this->ui->grid_endpointWidgets->addWidget(ew);
             this->endpointWidgets.append(ew);
-            this->mapMacToEndpointWidget.insert(endpoint->getMAC(), ew);
+            this->mapMacToEndpointWidget.insert(mac, ew);
             connect(ew, SIGNAL(signalRequestStateChange(QString,bool)),
                     this, SLOT(slotRequestStateChange(QString,bool)));
+            connect(ew, SIGNAL(signalClickedBackground(Endpoint*)), this, SLOT(slotEndpointWidgetClicked(Endpoint*)));
             int row=0;
             if (this->endpointWidgets.length()>4) {
                 row=1;
@@ -143,7 +174,18 @@ void MainWindow::updateTable(QList<Endpoint *> endpointsUpdate) {
                 int col = this->endpointWidgets.length() -EW_MAX_COLS - 1;
                 this->ui->horizontalLayoutEndpointWidgets_lower->insertWidget(col, ew);
             }
+
         }
+        //        if(this->mapMacToEndpointWidget.contains(endpoint->getMAC())) {
+        //            //a widget for this endpoint already exists-->get Widget
+        //            EndpointWidget* ew = this->mapMacToEndpointWidget.value(endpoint->getMAC());
+        //            //update its content
+        //            ew->setEndpoint(endpoint);
+        //            ew->updateWidget();
+        //            ew->repaint();
+        //            this->ui->horizontalLayoutEndpointWidgets_upper->update();
+
+        //        } else {
     }
 }
 
@@ -173,6 +215,14 @@ void MainWindow::slotRequestStateChange(QString MAC, bool state) {
     this->dataTransmitter->sendStateRequestDigital(MAC, state);
 }
 
+void MainWindow::slotEndpointWidgetClicked(Endpoint* endpoint)
+{
+    if (!this->endpointWindow->isVisible()) {
+        this->endpointWindow->show();
+    }
+    this->endpointWindow->setEndpoint(endpoint);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event) {
     QSettings settings(QDir::currentPath() + "/settings.ini",  QSettings::IniFormat);
     settings.beginGroup("MainWindow");
@@ -185,18 +235,26 @@ void MainWindow::slotQuit() {
     qDebug()<<__FUNCTION__;
     //save current window settings
     emit signalQuit();
+    this->endpointWindow->close();
     this->close();
 }
 
 void MainWindow::slotResetServer() {
     this->dataTransmitter->sendServerResetRequest();
+    this->endpointWindow->close();
 }
 
 void MainWindow::slotResetUI() {
     clearEndpointsGrid();
+    this->endpointWindow->close();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+QMap<QString, Endpoint *> MainWindow::getEndpointsMap()
+{
+    return this->mapMac2endpoints;
 }

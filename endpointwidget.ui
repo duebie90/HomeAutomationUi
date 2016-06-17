@@ -528,6 +528,16 @@
       <bool>true</bool>
      </property>
     </widget>
+    <widget class="QGraphicsView" name="delete_button">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>0</y>
+       <width>30</width>
+       <height>30</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="l_MAC">
     <property name="geometry">

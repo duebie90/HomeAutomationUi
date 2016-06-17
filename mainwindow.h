@@ -13,6 +13,7 @@
 #include <endpointwidget.h>
 #include <client.h>
 #include <datatransmitter.h>
+#include <QmlEndpointWidget.h>
 
 namespace Ui {
 class MainWindow;
@@ -32,6 +33,7 @@ protected:
 public:
     explicit MainWindow(Client* client, QWidget *parent = 0);
     ~MainWindow();
+    QMap<QString, Endpoint*> getEndpointsMap();
 private slots:
     void slotConnect(bool);
     void slotConnected();
@@ -39,6 +41,7 @@ private slots:
     //void slotReceivedData(QString message);
     void slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate);
     void slotRequestStateChange(QString MAC, bool state);
+    void slotEndpointWidgetClicked(Endpoint* endpoint);
 
     void slotQuit();
     void slotResetServer();
@@ -54,7 +57,7 @@ private:
     void parseBasicEndpointInfo(QString message);
     void addEndpoint(QString alias, QString type, QString MAC);
     //
-    void updateTable(QList<Endpoint*> endpointsUpdate);
+    void updateTable();
     void clearEndpointsGrid();
     void testLayout();
 
@@ -63,10 +66,11 @@ private:
     Client* client;
     QStandardItemModel* tableDataModel;
     QTableView* endpointsTable;
-    QList<Endpoint*> endpoints;
+    QMap<QString, Endpoint*> mapMac2endpoints;
     QList<EndpointWidget*> endpointWidgets;
     QMap<QString, EndpointWidget*> mapMacToEndpointWidget;
     DataTransmitter* dataTransmitter;
+    QmlEndpointWidget* endpointWindow;
 
 
 };

@@ -3,6 +3,7 @@
 #include <endpoint.h>
 #include <../HomeAutomationServer/HomeAutomation-Network/messagetype.h>
 //#include <datatransmitter.h>
+#include <QMouseEvent>
 
 
 #define UPDATE_BLOCK_INTERVALL 1000 //ms
@@ -97,8 +98,13 @@ void EndpointWidget::slotChangedSwitchedState(bool switchedOn) {
 }
 
 void EndpointWidget::slotUpdateBlockFinished() {
-    qDebug()<<__FUNCTION__<<"Update block disabled";
     this->updateBlocked = false;
+}
+
+void EndpointWidget::mousePressEvent(QMouseEvent *event)
+{
+    signalClickedBackground(this->endpoint);
+    event->accept();
 }
 
 EndpointWidget::~EndpointWidget()
