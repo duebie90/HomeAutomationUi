@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <datareceiver.h>
-
+#include <MainScreenWidget.h>
 
 int main(int argc, char *argv[])
 {
@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("Fh-Kiel");
     Client client;
     MainWindow mainWindow(&client);
-    DataReceiver dataReceiver;
 
+    DataReceiver dataReceiver;
 
     //Connections from MainWindow to TcpClient
     QObject::connect(&mainWindow, SIGNAL(signalSend(QByteArray)), &client, SLOT(slotSend(QByteArray)));
@@ -28,9 +28,11 @@ int main(int argc, char *argv[])
     QObject::connect(&client, SIGNAL(signalReceivedData(QByteArray)), &dataReceiver, SLOT(slotReceivedData(QByteArray)));
 
     //connections from DataReceiver to MainWindow
-    QObject::connect(&dataReceiver, SIGNAL(signalReceivedEndpointList(QList<Endpoint*>)), &mainWindow, SLOT(slotReceivedEndpointList(QList<Endpoint*>)));
+    QObject::connect(&dataReceiver, SIGNAL(signalReceivedEndpointList(QList<Endpoint*>)),
+                     &mainWindow, SLOT(slotReceivedEndpointList(QList<Endpoint*>)));
+    QObject::connect(&dataReceiver, SIGNAL(signalReceivedEndpointSchedules(QList<ScheduleEvent*>,QString)),
+                     &mainWindow, SLOT(slotReceivedEndpointSchedules(QList<ScheduleEvent*>,QString)));
     QObject::connect(&mainWindow, SIGNAL(signalQuit()), &a, SLOT(quit()));
-
 
 
     mainWindow.show();

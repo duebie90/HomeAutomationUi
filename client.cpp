@@ -48,12 +48,10 @@ void Client::slotDisplayError(QAbstractSocket::SocketError socketError) {
 }
 
 void Client::slotReceivedData() {
-    qDebug()<<__FUNCTION__;
     QDataStream in(tcpSocket);
     in.setVersion(QDataStream::Qt_4_0);
     //To receive integers use:
     //    if (tcpSocket->bytesAvailable() < (int)sizeof(quint16))
-    qDebug()<<"Byte avail: "<<tcpSocket->bytesAvailable();
     QByteArray received;
     //in >> received;
     received = tcpSocket->readAll();    

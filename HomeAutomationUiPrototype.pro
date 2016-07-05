@@ -5,11 +5,12 @@
 #-------------------------------------------------
 
 QT       += core gui network qml quick
+QT       += quickwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HomeAutomationUiPrototype
-TEMPLATE = app quick qml
+TEMPLATE = app
 
 
 SOURCES += main.cpp\
@@ -19,7 +20,11 @@ SOURCES += main.cpp\
     datareceiver.cpp \
     datatransmitter.cpp \
     endpointwidget.cpp \
-    QmlEndpointWidget.cpp
+    QmlEndpointWidget.cpp \
+    MainScreenWidget.cpp \
+    EndpointOverviewScreen.cpp \
+    AbstractScreenController.cpp \
+    ../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.cpp
 
 HEADERS  += mainwindow.h \
     client.h \
@@ -28,10 +33,15 @@ HEADERS  += mainwindow.h \
     datatransmitter.h \
     endpointwidget.h \
     ../HomeAutomationServer/HomeAutomation-Network/messagetype.h \
-    QmlEndpointWidget.h
+    QmlEndpointWidget.h \
+    MainScreenWidget.h \
+    EndpointOverviewScreen.h \
+    AbstractScreenController.h \
+    ../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.h
 
 FORMS    += mainwindow.ui \
-    endpointwidget.ui
+    endpointwidget.ui \
+    MainScreenWidget.ui
 
 RC_FILE = uiPrototype.rc
 

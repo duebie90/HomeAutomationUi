@@ -10,11 +10,6 @@ DataReceiver::DataReceiver(QObject* parent):
 void DataReceiver::slotReceivedData(QByteArray data) {
     processProtocollHeader(data);
 
-
-
-
-
-
 }
 
 int DataReceiver::processProtocollHeader(QByteArray data) {
@@ -95,7 +90,8 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
         }
         emit signalReceivedEndpointList(endpointsUpdate);
         break;
-    case MESSAGETYPE_UI_INFO:
+    case MESSAGETYPE_ENDPOINTS_SCHEDULES_LIST:
+        //
     default:
         qDebug()<<__FUNCTION__<<"Unrecognized MessageType";
     }

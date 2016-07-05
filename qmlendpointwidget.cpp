@@ -11,7 +11,7 @@ QmlEndpointWidget::QmlEndpointWidget(Endpoint* endpoint, QWidget *parent) :
 {
     this->endpoint = endpoint;
     qmlViewer->rootContext()->setContextProperty("endpoint", this);
-    connect(pendingRequestNoUpdateTimer, SIGNAL(timeout()), this, SLOT(slotPendingRequestNoUpdateTimerTimeout()));
+    connect(pendingRequestNoUpdateTimer, SIGNAL(timeout()), this, SLOT(slotPendingRequestNoUpdateTimerTimeout()));    
 }
 
 void QmlEndpointWidget::showQml()

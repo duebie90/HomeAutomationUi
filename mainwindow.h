@@ -14,16 +14,11 @@
 #include <client.h>
 #include <datatransmitter.h>
 #include <QmlEndpointWidget.h>
+#include <MainScreenWidget.h>
 
 namespace Ui {
 class MainWindow;
 }
-
-namespace ui {
-    class MainWindow;
-}
-
-
 
 class MainWindow : public QMainWindow
 {
@@ -40,8 +35,11 @@ private slots:
     void slotDisconnected();
     //void slotReceivedData(QString message);
     void slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate);
+    void slotReceivedEndpointSchedules(QList<ScheduleEvent*> schedulesList, QString MAC);
     void slotRequestStateChange(QString MAC, bool state);
     void slotEndpointWidgetClicked(Endpoint* endpoint);
+
+    void slotSendEndpointScheduleUpdate(QString mac, ScheduleEvent* event);
 
     void slotQuit();
     void slotResetServer();
@@ -51,16 +49,13 @@ signals:
     void signalConnect(QHostAddress host, quint16 port);
     void signalDisconnect();
 
+
     void signalQuit();
 private:
     //ToDo: move to an appropriate Class
     void parseBasicEndpointInfo(QString message);
     void addEndpoint(QString alias, QString type, QString MAC);
-    //
-    void updateTable();
-    void clearEndpointsGrid();
-    void testLayout();
-
+    void updateMainScreen(QList<Endpoint*> endpointsUpdate);
 
     Ui::MainWindow *ui;
     Client* client;
@@ -71,6 +66,7 @@ private:
     QMap<QString, EndpointWidget*> mapMacToEndpointWidget;
     DataTransmitter* dataTransmitter;
     QmlEndpointWidget* endpointWindow;
+    MainScreenWidget* mainQmlScreen;
 
 
 };

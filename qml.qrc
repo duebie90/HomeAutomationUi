@@ -1,5 +1,15 @@
 <RCC>
     <qresource prefix="/">
-        <file>QmlEndpointWidget.qml</file>
+        <file>MainQmlScreen.qml</file>
+        <file>FrameButton.qml</file>
+        <file>CustomSwitch.qml</file>
+        <file>EditSchedulesScreen.qml</file>
+        <file>EndpointOverviewScreen.qml</file>
+        <file>EndpointWidget.qml</file>
+        <file>SideBarEndpointList.qml</file>
+        <file>ScheduleDialog.qml</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>images/add-square.png</file>
     </qresource>
 </RCC>

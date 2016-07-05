@@ -39,7 +39,7 @@ EndpointWidget::EndpointWidget(Endpoint* endpoint ,QWidget *parent) :
 
 void EndpointWidget::updateWidget() {
     if (!this->updateBlocked) {
-        qDebug()<<__FUNCTION__<<"Updating Endpoint Widget";
+        //qDebug()<<__FUNCTION__<<"Updating Endpoint Widget";
         bool switchedOn, connected;
         alias   = this->endpoint->getAlias();
         MAC     = this->endpoint->getMAC();

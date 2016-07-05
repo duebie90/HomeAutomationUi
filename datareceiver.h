@@ -16,6 +16,7 @@ public slots:
     void slotReceivedData(QByteArray data);
 signals:
     void signalReceivedEndpointList(QList<Endpoint*> endpointsUpdate);
+    void signalReceivedEndpointSchedules(QList<ScheduleEvent*> schedulesUpdate, QString MAC);
     //...
 private:
     int processProtocollHeader(QByteArray data);
