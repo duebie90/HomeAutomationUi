@@ -55,8 +55,7 @@ QVariant Endpoint::getSchedulesObjectList()
 void Endpoint::addSchedule(ScheduleEvent::RepetitionType repetition, QTime startTime, QTime endTime, QList<bool> weekdaysList)
 {
     qDebug()<<startTime.toString();
-    int scheduleID = this->scheduleEvents.length();
-    scheduleID = 15;
+    int scheduleID = this->scheduleEvents.length();    
     ScheduleEvent* sevent =  new ScheduleEvent(scheduleID, startTime, endTime, QDate::currentDate(), repetition, ScheduleEvent::EVENT_ON, weekdaysList);
     this->scheduleEvents.append(sevent);
     //EndpointOverviewScreen* endpointOverview = (EndpointOverviewScreen*)MainScreenWidget::getControllerInstance("EndpointOverviewScreen");

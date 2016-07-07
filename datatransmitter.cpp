@@ -60,15 +60,16 @@ void DataTransmitter::sendServerResetRequest() {
 void DataTransmitter::sendEndpointSchedule(QString mac, ScheduleEvent *scheduleEvent)
 {
     //For Debug pupose only
-    ScheduleEvent se(0, QTime::currentTime().addSecs(10),QTime::currentTime().addSecs(20), QDate::currentDate(), ScheduleEvent::REPETITION_TYPE_NONE, ScheduleEvent::EVENT_ON);
+    //ScheduleEvent se(0, QTime::currentTime().addSecs(10),QTime::currentTime().addSecs(20), QDate::currentDate(), ScheduleEvent::REPETITION_TYPE_NONE, ScheduleEvent::EVENT_ON);
     //
     QByteArray payload;
     QDataStream out(&payload, QIODevice::ReadWrite);
+    out<<mac;
     out<<scheduleEvent;
     sendMessage(MESSAGETYPE_ENDPOINT_SCHEDULE, payload);
     //DEBUG: read back to chack if working properly
-    out.device()->reset();
-    out>>&se;
+    //out.device()->reset();
+    //out>>&se;
 }
 
 
