@@ -126,7 +126,10 @@ void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
 
 void MainWindow::slotReceivedEndpointSchedules(QList<ScheduleEvent *> schedulesList, QString MAC)
 {
-
+     if (this->mapMac2endpoints.keys().contains(MAC)) {
+         Endpoint* endpoint = this->mapMac2endpoints.value(MAC);
+         //ToDo update endpoint schedules
+     }
 }
 
 void MainWindow::parseBasicEndpointInfo(QString message) {
@@ -154,6 +157,8 @@ void MainWindow::slotEndpointWidgetClicked(Endpoint* endpoint)
 
 void MainWindow::slotSendEndpointScheduleUpdate(QString mac, ScheduleEvent *event)
 {
+    //send one schedule to server which was created or edited
+    //if it exists already, server will find that out by its id
     this->dataTransmitter->sendEndpointSchedule(mac, event);
 }
 

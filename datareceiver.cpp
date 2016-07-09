@@ -90,8 +90,23 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
         }
         emit signalReceivedEndpointList(endpointsUpdate);
         break;
-    case MESSAGETYPE_ENDPOINTS_SCHEDULES_LIST:
-        //
+    case MESSAGETYPE_ENDPOINTS_SCHEDULES_LIST: {
+        //all schedules of one endpoint are updated
+        quint8 schedulesCount;
+        int i = 0;
+        QList<ScheduleEvent*> schedulesUpdate;
+        QDataStream in(&payload, QIODevice::ReadOnly);
+        in>>MAC;
+        in>>schedulesCount;
+        while(!in.atEnd() && i<schedulesCount) {
+            ScheduleEvent* event = new ScheduleEvent();
+            in>>event;
+            schedulesUpdate.append(event);
+            i++;
+        }
+        emit signalReceivedEndpointSchedules(schedulesUpdate, MAC);
+    }
+    break;
     default:
         qDebug()<<__FUNCTION__<<"Unrecognized MessageType";
     }
