@@ -31,8 +31,9 @@ public:
     void setAutoOn(bool state);
     bool isAutoOn();
     void sendMessage(QByteArray message);
-    QList<ScheduleEvent*> getSchedules();
+    QMap<int, ScheduleEvent*> getScheduledEvents();
     QVariant getSchedulesObjectList();
+    void updateSchedules(QList<ScheduleEvent*> schedules);
     void addSchedule(ScheduleEvent::RepetitionType, QTime startTime, QTime endtime, QList<bool>weekdaysList=QList<bool>());
     enum EndpointType {
         switchbox,
@@ -63,8 +64,8 @@ private:
     QTcpSocket* clientSocket;
     bool state;
     bool connected;
-    bool autoMode;
-    QList<ScheduleEvent*> scheduleEvents;
+    bool autoMode;    
+    QMap<int, ScheduleEvent*> scheduleEvents;
     //temporary storage for new schedules
     QList<bool> checkedWeekdays;
     ScheduleEvent::RepetitionType chosenRepetitionType;

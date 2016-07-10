@@ -19,9 +19,7 @@ Endpoint::Endpoint(QTcpSocket* socket, QString alias, QString type, QString MAC,
         connect(clientSocket, SIGNAL(disconnected()), this, SLOT(slotDisconnected()));
         this->connected = true;
     }
-    //create ScheduleEvents for developement only
-ScheduleEvent* event =  new ScheduleEvent(0, QTime::currentTime().addSecs(10),QTime::currentTime().addSecs(20), QDate::currentDate(), ScheduleEvent::REPETITION_TYPE_NONE, ScheduleEvent::EVENT_ON);
-this->scheduleEvents.append(event);              
+
 
 this->checkedWeekdays = {false, false, false, false, false, false, false};
 }
@@ -37,7 +35,7 @@ void Endpoint::sendMessage(QByteArray message){
     this->clientSocket->write(message, message.length());
 }
 
-QList<ScheduleEvent *> Endpoint::getSchedules()
+QMap<int, ScheduleEvent*> Endpoint::getScheduledEvents()
 {
     return this->scheduleEvents;
 }
@@ -45,19 +43,45 @@ QList<ScheduleEvent *> Endpoint::getSchedules()
 QVariant Endpoint::getSchedulesObjectList()
 {
     QList<QObject*> schedulesObjectList;
-    foreach(ScheduleEvent* event, this->scheduleEvents) {
+    foreach(ScheduleEvent* event, this->scheduleEvents.values()) {
         //endpointSchedulesStringList.append(event->toString());
         schedulesObjectList.append(event);
     }
     return QVariant::fromValue(schedulesObjectList);
 }
 
+void Endpoint::updateSchedules(QList<ScheduleEvent*> schedules)
+{
+    foreach(ScheduleEvent* event, schedules) {
+        if (this->scheduleEvents.contains(event->getId())) {
+            ScheduleEvent* oldEvent = scheduleEvents.value(event->getId());
+            //using stream operator to update all values
+            QByteArray buffer;
+            QDataStream stream(&buffer, QIODevice::ReadWrite);
+            stream<<event;
+            stream.device()->reset();
+            stream>>oldEvent;
+        } else if(event->getId() == scheduleEvents.size()){
+            this->scheduleEvents.insert(event->getId(), event);
+        } else if(event->getId() > scheduleEvents.size()){
+            int id = scheduleEvents.size();
+            event->setId(id);
+            this->scheduleEvents.insert(id, event);
+        } else {
+            cout<<"Endpoint "<<getMAC().toStdString()<<" : Error inserting schedule event\n";
+            cout<<"Id"<<event->getId()<<" is invalid";
+        }
+    }
+    emit signalSchedulesChanged();
+}
+
 void Endpoint::addSchedule(ScheduleEvent::RepetitionType repetition, QTime startTime, QTime endTime, QList<bool> weekdaysList)
 {
     qDebug()<<startTime.toString();
-    int scheduleID = this->scheduleEvents.length();    
+    int scheduleID = this->scheduleEvents.size();
     ScheduleEvent* sevent =  new ScheduleEvent(scheduleID, startTime, endTime, QDate::currentDate(), repetition, ScheduleEvent::EVENT_ON, weekdaysList);
-    this->scheduleEvents.append(sevent);
+    int id = this->scheduleEvents.size();
+    this->scheduleEvents.insert(id, sevent);
     //EndpointOverviewScreen* endpointOverview = (EndpointOverviewScreen*)MainScreenWidget::getControllerInstance("EndpointOverviewScreen");
     //trigger update of shown schedules
     //endpointOverview->slotShownEndpointChanged(endpointOverview->getShownEndpointIndex());
@@ -107,7 +131,7 @@ void Endpoint::saveNewSchedule(QString startTime, QString endTime)
 
 void Endpoint::saveScheduleChanges(ScheduleEvent *event, QString startTimeString, QString endTimeString, int repetitionType)
 {
-    if (this->scheduleEvents.contains(event)) {
+    if (this->scheduleEvents.contains(event->getId())) {
         qDebug()<<__FUNCTION__<<"event found";
         QTime start = QTime::fromString(startTimeString, "hmm");
         QTime end = QTime::fromString(endTimeString, "hmm");

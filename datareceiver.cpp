@@ -22,6 +22,9 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
     if (data.at(0) != 0x01)
         return -1;
     messageType = (MessageType)data.at(1); //second Byte
+    if(messageType == MESSAGETYPE_ENDPOINTS_SCHEDULES_LIST) {
+        qDebug()<<"schedules List received";
+    }
     QByteArray lengthBytes= data.mid(2,2);
 
     if(lengthBytes.at(0) != -1) {
@@ -38,10 +41,15 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
     } else {
         return -2;
     }
-    payload = splitOfPayload.split(0x03).at(0);
-    //check payload length
-    if (payload.length() != payloadLength) {
-        return -3;
+    if (messageType != MESSAGETYPE_ENDPOINTS_SCHEDULES_LIST) {
+        payload = splitOfPayload.split(0x03).at(0);
+        //check payload length
+        if (payload.length() != payloadLength) {
+            cout<<"Received invalid message.\n";
+            return -3;
+        }
+    } else {
+        payload = data.mid(5, payloadLength);
     }
     //check correct termination after payload section (0x03|0x04)
     QByteArray termination = data.mid(5 + payloadLength, 2);
@@ -98,13 +106,15 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
         QDataStream in(&payload, QIODevice::ReadOnly);
         in>>MAC;
         in>>schedulesCount;
-        while(!in.atEnd() && i<schedulesCount) {
-            ScheduleEvent* event = new ScheduleEvent();
-            in>>event;
-            schedulesUpdate.append(event);
-            i++;
+        if (schedulesCount != 0 ) {
+            while(!in.atEnd() && i<schedulesCount) {
+                ScheduleEvent* event = new ScheduleEvent();
+                in>>event;
+                schedulesUpdate.append(event);
+                i++;
+            }
+            emit signalReceivedEndpointSchedules(schedulesUpdate, MAC);
         }
-        emit signalReceivedEndpointSchedules(schedulesUpdate, MAC);
     }
     break;
     default:

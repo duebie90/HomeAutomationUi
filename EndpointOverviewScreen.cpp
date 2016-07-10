@@ -72,7 +72,7 @@ void EndpointOverviewScreen::slotShownEndpointChanged(int index)
 {
     //QStringList endpointSchedulesStringList;
     QList<QObject*> endpointsSchedulesObjectList;
-    QList<ScheduleEvent*> schedules = this->endpoints.at(index)->getSchedules();
+    QList<ScheduleEvent*> schedules = this->endpoints.at(index)->getScheduledEvents().values();
     foreach(ScheduleEvent* event, schedules) {
         //endpointSchedulesStringList.append(event->toString());
         endpointsSchedulesObjectList.append( (QObject*)event);

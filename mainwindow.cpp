@@ -128,7 +128,7 @@ void MainWindow::slotReceivedEndpointSchedules(QList<ScheduleEvent *> schedulesL
 {
      if (this->mapMac2endpoints.keys().contains(MAC)) {
          Endpoint* endpoint = this->mapMac2endpoints.value(MAC);
-         //ToDo update endpoint schedules
+         endpoint->updateSchedules(schedulesList);
      }
 }
 
