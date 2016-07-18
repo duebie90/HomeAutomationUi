@@ -13,7 +13,7 @@ class Endpoint: public QObject
     Q_PROPERTY(QString name READ getAlias NOTIFY signalUpdateEndpoint)
     Q_PROPERTY(QString mac READ getMAC NOTIFY signalUpdateEndpoint)
     Q_PROPERTY(QString type READ getType NOTIFY signalUpdateEndpoint)
-    Q_PROPERTY(bool switchedState READ getState WRITE setState NOTIFY signalUpdateEndpoint)
+    Q_PROPERTY(bool switchedState READ getState NOTIFY signalUpdateEndpoint)
     Q_PROPERTY(bool connected READ isConnected NOTIFY signalUpdateEndpoint)
     Q_PROPERTY(bool autoMode READ isAutoOn NOTIFY signalAutoModeChanged)
     Q_PROPERTY(QVariant schedules READ getSchedulesObjectList NOTIFY signalSchedulesChanged)
@@ -28,7 +28,7 @@ public:
     QString getMAC();
     void setState(bool state);
     bool getState();
-    void setAutoOn(bool state);
+    Q_INVOKABLE void setAutoMode(bool state);
     bool isAutoOn();
     void sendMessage(QByteArray message);
     QMap<int, ScheduleEvent*> getScheduledEvents();
@@ -41,6 +41,7 @@ public:
         lightSwitch
     };
     Q_INVOKABLE void requestStateChange(bool state);
+    Q_INVOKABLE void requestAutoMode(bool autoMode);
     Q_INVOKABLE void changeAutoState(bool state);
     Q_INVOKABLE void weekdayChecked(int weekday, bool checked);
     Q_INVOKABLE void saveNewSchedule(QString startTime, QString endTime);

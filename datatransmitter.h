@@ -17,6 +17,7 @@ public:
     void sendStateRequestAnalog(QString MAC, int state=0);
     //requests the server to forget all permanently stored, connected and not-connected, endpoint information
     void sendServerResetRequest();
+    void sendAutoControlledRequest(QString MAC, int autoControlled);
 
     void sendEndpointSchedule(QString mac, ScheduleEvent* scheduleEvent);
     QByteArray prepareMessage(MessageType type, QByteArray payload);

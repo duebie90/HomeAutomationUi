@@ -20,6 +20,14 @@ Item {
                 hide()
             }
     }
+    property bool switchedState: (endpoint !== undefined ) ? endpoint.switchedState : false
+    onSwitchedStateChanged:  {
+        manSwitch.checked = switchedState
+    }
+    property bool autoControlled: endpoint.autoMode
+    onAutoControlledChanged: {
+        autoSwitch.checked = autoControlled
+    }
 
     function show() {
         if(hideAnimation.running) {
@@ -156,8 +164,10 @@ Item {
         anchors.top: manSwitchCaption.bottom
         anchors.topMargin: 2
         anchors.left: manSwitchCaption.left
-        checked:(endpoint !== undefined ) ? switchedState : false
-        onCheckedChanged: endpoint.requestStateChange(checked)        
+        //checked:endpoint.switchedState //(endpoint !== undefined ) ? endpoint.switchedState : false
+        checked: root.switchedState
+        onCheckedChanged: endpoint.requestStateChange(checked)
+        enabled: endpoint !== undefined && endpoint !== null
     }
     Text{
         id:autoSwitchCaption
@@ -176,7 +186,7 @@ Item {
         anchors.topMargin: 2
         anchors.left: autoSwitchCaption.left
         checked:(endpoint !== undefined ) ? autoMode : false
-        onCheckedChanged: endpoint.changeAutoState(checked)
+        onCheckedChanged: endpoint.requestAutoMode(checked)
     }
 
     EditSchedulesScreen{

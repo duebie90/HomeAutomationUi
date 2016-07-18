@@ -96,7 +96,20 @@ void Endpoint::addSchedule(ScheduleEvent::RepetitionType repetition, QTime start
 
 void Endpoint::requestStateChange(bool state)
 {
-    emit signalRequestStateChange(getMAC(), state);
+    if (this->state != state) {
+        this->state = state;
+        emit signalUpdateEndpoint();
+        emit signalRequestStateChange(getMAC(), state);
+    }
+}
+
+void Endpoint::requestAutoMode(bool autoMode)
+{
+    if(this->autoMode != autoMode) {
+        this->autoMode = autoMode;
+        emit signalUpdateEndpoint();
+        DataTransmitter::getInstance()->sendAutoControlledRequest(getMAC(), autoMode);
+    }
 }
 
 void Endpoint::changeAutoState(bool state)
@@ -195,7 +208,7 @@ bool Endpoint::getState() {
     return this->state;
 }
 
-void Endpoint::setAutoOn(bool state)
+void Endpoint::setAutoMode(bool state)
 {
     this->autoMode = state;
     emit signalAutoModeChanged();

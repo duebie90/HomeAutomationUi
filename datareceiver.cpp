@@ -62,7 +62,7 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
 }
 
 void DataReceiver::processMessage(MessageType type, QByteArray payload) {
-    QString alias, MAC, endpointType, state, connected;
+    QString alias, MAC, endpointType, state, connected, autoControlled;
     QList<Endpoint*> endpointsUpdate;
     Endpoint* newEndpoint;
     //0x1F = unit separator
@@ -72,26 +72,20 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     case MESSAGETYPE_ENDPOINT_IDENT:
         break;
     case MESSAGETYPE_ENDPOINTS_STATES_LIST:
-        for(int i= 0; i< (payloadParts.length()) ; i+=5) {
-            if(payloadParts.length() >= i+5) {
-            alias   =   payloadParts.at(i + 0);
-            MAC     =   payloadParts.at(i + 1);
-            endpointType = payloadParts.at(i + 2);
-            state = payloadParts.at(i + 3);
-            connected = payloadParts.at(i + 4);
-            newEndpoint = new Endpoint(NULL, alias, endpointType, MAC);
-            if(state == "1") {
-                newEndpoint->setState(true);
+        for(int i= 0; i< (payloadParts.length()) ; i+=6) {
+            if(payloadParts.length() >= i+6) {
+                alias   =   payloadParts.at(i + 0);
+                MAC     =   payloadParts.at(i + 1);
+                endpointType = payloadParts.at(i + 2);
+                state = payloadParts.at(i + 3);
+                connected = payloadParts.at(i + 4);
+                autoControlled = payloadParts.at(i + 5);
+                newEndpoint = new Endpoint(NULL, alias, endpointType, MAC);
+                newEndpoint->setState(state == "1");
+                newEndpoint->setAutoMode(autoControlled == "1");
+                newEndpoint->setConnected(connected == "1");
+                endpointsUpdate.append(newEndpoint);
             }
-            else {
-                    newEndpoint->setState(false);
-            }
-            if(connected == "0"){
-                newEndpoint->setConnected(false);
-            } else if(connected == "1") {
-                newEndpoint->setConnected(true);
-            }
-            endpointsUpdate.append(newEndpoint);}
             else {
                 qDebug()<<__FUNCTION__<<"Message error. Data incomplete";
             }

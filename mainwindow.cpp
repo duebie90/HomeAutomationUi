@@ -94,6 +94,10 @@ void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
             this->mapMac2endpoints.insert(endpoint->getMAC(), endpoint);
             connect(endpoint, SIGNAL(signalSendScheduleUpdate(QString,ScheduleEvent*)),
                     this, SLOT(slotSendEndpointScheduleUpdate(QString,ScheduleEvent*)));
+            connect(endpoint, SIGNAL(signalRequestStateChange(QString,bool)),
+                    this, SLOT(slotRequestStateChange(QString,bool)));
+            connect(endpoint, SIGNAL(signalRequestStateChange(QString,bool)),
+                    this, SLOT(slotRequestStateChange(QString,bool)));
             endpointsListChanged = true;
         }
         else {
@@ -102,6 +106,7 @@ void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
                 //do the update stuff
                 endpoint2Update->setState( endpoint->getState());
                 endpoint2Update->setConnected( endpoint->isConnected());
+                endpoint2Update->setAutoMode(endpoint->isAutoOn());
             }
         }
         endpointsUpdateMacs.append(endpoint->getMAC());

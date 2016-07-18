@@ -57,6 +57,15 @@ void DataTransmitter::sendServerResetRequest() {
         sendMessage(MESSAGETYPE_RESET_SERVER);
 }
 
+void DataTransmitter::sendAutoControlledRequest(QString MAC, int autoControlled)
+{
+    QByteArray payload;
+    payload.append(MAC);
+    payload.append(PDU_DELIMITER);
+    payload.append(autoControlled ? "1" : "0");
+    sendMessage(MESSAGETYPE_UI_ENDPOINT_AUTO_REQUEST, payload);
+}
+
 void DataTransmitter::sendEndpointSchedule(QString mac, ScheduleEvent *scheduleEvent)
 {
     QByteArray payload;
