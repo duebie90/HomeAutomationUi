@@ -13,7 +13,6 @@ Item{
     property variant schedule:undefined
     property bool weekdaysEnabled: true//intervallCombo.currentIndex !=4
     onScheduleChanged: {
-        console.log("ScheduleDialog schedule set rep type = "+  schedule.repetition)
         intervallCombo.currentIndex = schedule.repetition
         hoursTextFieldStart.text = schedule.eventStartTime.toLocaleTimeString(Qt.locale("de_DE"),"hh")
         minutesTextFieldStart.text = schedule.eventStartTime.toLocaleTimeString(Qt.locale("de_DE"),"mm")

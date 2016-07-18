@@ -6,7 +6,7 @@ Switch {
     id: control
     down: handleMouseArea.pressed    
     onCheckedChanged: {
-        console.log("onCheckChanged")
+        console.log("CustomSwitch onCheckedChanged to " + checked)
         if(checked) {
             handle.x = handleMouseArea.drag.maximumX
         } else {
@@ -38,7 +38,7 @@ Switch {
                 anchors.fill: parent
                 drag.target: parent
                 drag.axis: Drag.XAxis
-                drag.maximumX: indicatorRect.width - width
+                drag.maximumX: indicatorRect.implicitWidth - handle.width
                 drag.minimumX: 0
                 property int thresholdX: checked ? 3*indicatorRect.width/4 : 1*indicatorRect.width/4
                 onReleased:  {

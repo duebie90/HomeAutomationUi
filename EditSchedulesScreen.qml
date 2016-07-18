@@ -153,15 +153,7 @@ Item {
         onSignalClicked: {scheduleDialog.hide()
                          hide()}
     }
-    FrameButton {
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 5
-        anchors.left: parent.horizontalCenter
-        anchors.leftMargin: 20
-        text: "Abbrechen"
-        onSignalClicked: { scheduleDialog.hide()
-                            hide()}
-    }
+
 
     ScheduleDialog {
         id:scheduleDialog
