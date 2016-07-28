@@ -52,6 +52,7 @@ QVariant Endpoint::getSchedulesObjectList()
 
 void Endpoint::updateSchedules(QList<ScheduleEvent*> schedules)
 {
+    QList<int> updatedIds;
     foreach(ScheduleEvent* event, schedules) {
         if (this->scheduleEvents.contains(event->getId())) {
             ScheduleEvent* oldEvent = scheduleEvents.value(event->getId());
@@ -71,8 +72,16 @@ void Endpoint::updateSchedules(QList<ScheduleEvent*> schedules)
             cout<<"Endpoint "<<getMAC().toStdString()<<" : Error inserting schedule event\n";
             cout<<"Id"<<event->getId()<<" is invalid";
         }
+        updatedIds.append(event->getId());
+    }
+    foreach(int eventID, this->scheduleEvents.keys()) {
+        if (!updatedIds.contains(eventID)) {
+           //the ID of this schedules is not contained in the update
+           this->scheduleEvents.remove(eventID);
+        }
     }
     emit signalSchedulesChanged();
+
 }
 
 void Endpoint::addSchedule(ScheduleEvent::RepetitionType repetition, QTime startTime, QTime endTime, QList<bool> weekdaysList)

@@ -100,15 +100,13 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
         QDataStream in(&payload, QIODevice::ReadOnly);
         in>>MAC;
         in>>schedulesCount;
-        if (schedulesCount != 0 ) {
-            while(!in.atEnd() && i<schedulesCount) {
-                ScheduleEvent* event = new ScheduleEvent();
-                in>>event;
-                schedulesUpdate.append(event);
-                i++;
-            }
-            emit signalReceivedEndpointSchedules(schedulesUpdate, MAC);
+        while(!in.atEnd() && i<schedulesCount) {
+            ScheduleEvent* event = new ScheduleEvent();
+            in>>event;
+            schedulesUpdate.append(event);
+            i++;
         }
+        emit signalReceivedEndpointSchedules(schedulesUpdate, MAC);
     }
     break;
     default:
