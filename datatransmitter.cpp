@@ -66,6 +66,15 @@ void DataTransmitter::sendAutoControlledRequest(QString MAC, int autoControlled)
     sendMessage(MESSAGETYPE_UI_ENDPOINT_AUTO_REQUEST, payload);
 }
 
+void DataTransmitter::sendRemoveSchedule(QString mac, int id)
+{
+    QByteArray payload;
+    payload.append(mac);
+    payload.append(PDU_DELIMITER);
+    payload.append(QString::number(id));
+    sendMessage(MESSAGETYPE_UI_DELETE_SCHEDULE, payload);
+}
+
 void DataTransmitter::sendEndpointSchedule(QString mac, ScheduleEvent *scheduleEvent)
 {
     QByteArray payload;

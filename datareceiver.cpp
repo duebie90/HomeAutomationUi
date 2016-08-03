@@ -23,7 +23,7 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
         return -1;
     messageType = (MessageType)data.at(1); //second Byte
     if(messageType == MESSAGETYPE_ENDPOINTS_SCHEDULES_LIST) {
-        qDebug()<<"schedules List received";
+        //qDebug()<<"schedules List received";
     }
     QByteArray lengthBytes= data.mid(2,2);
 

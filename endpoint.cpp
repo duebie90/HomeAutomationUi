@@ -62,15 +62,17 @@ void Endpoint::updateSchedules(QList<ScheduleEvent*> schedules)
             stream<<event;
             stream.device()->reset();
             stream>>oldEvent;
-        } else if(event->getId() == scheduleEvents.size()){
+        } else {//if(event->getId() == scheduleEvents.size()){
             this->scheduleEvents.insert(event->getId(), event);
-        } else if(event->getId() > scheduleEvents.size()){
-            int id = scheduleEvents.size();
-            event->setId(id);
-            this->scheduleEvents.insert(id, event);
-        } else {
-            cout<<"Endpoint "<<getMAC().toStdString()<<" : Error inserting schedule event\n";
-            cout<<"Id"<<event->getId()<<" is invalid";
+//        } else if(event->getId() > scheduleEvents.size()){
+//            int id = scheduleEvents.size();
+//            event->setId(id);
+//            this->scheduleEvents.insert(id, event);
+//        } else {
+//            cout<<"Endpoint "<<getMAC().toStdString()<<" : Error inserting schedule event\n";
+//            cout<<"Id"<<event->getId()<<" is invalid";
+//        }
+            this->scheduleEvents.insert(event->getId(), event);
         }
         updatedIds.append(event->getId());
     }
@@ -101,6 +103,15 @@ void Endpoint::addSchedule(ScheduleEvent::RepetitionType repetition, QTime start
     this->checkedWeekdays = {false, false, false, false, false, false, false};
     emit signalSchedulesChanged();
     emit signalSendScheduleUpdate(getMAC(), sevent);
+}
+
+void Endpoint::removeSchedule(ScheduleEvent *event)
+{
+    //ToDo: Tell server to remove this schedule event
+    int id = this->scheduleEvents.key(event);
+    DataTransmitter::getInstance()->sendRemoveSchedule(getMAC(), id);
+    this->scheduleEvents.remove(id);
+    emit signalSchedulesChanged();
 }
 
 void Endpoint::requestStateChange(bool state)

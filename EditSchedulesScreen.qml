@@ -96,19 +96,21 @@ Item {
                 width:360; height: 40
                 property string colorIdle: ((index %2 ==0) ? "#333333" : "#595959")
                 color: delegateMouseArea.pressed ? "#0059b3": schedulesList.currentIndex == index ? "#003366": colorIdle
-                Row {
                 Text{
-                    anchors.verticalCenter: parent.verticalCenter
+                    id:onTimeText
+                    anchors.left: parent.left
+                    anchors.leftMargin: 10
                     leftPadding: 10
                     text:"EIN " + modelData.eventStartTime.toLocaleTimeString(Qt.locale("de_DE"),"h:mm") + "Uhr"
                     font.pixelSize:15
                 }
                 Text{
-                    anchors.verticalCenter: parent.verticalCenter
+                    id:offTimeText
+                    anchors.left: onTimeText.right
+                    anchors.leftMargin: 10
                     leftPadding:10
                     text:"AUS " + modelData.eventEndTime.toLocaleTimeString(Qt.locale("de_DE"),"h:mm") + "Uhr"
                     font.pixelSize:15
-                }
                 }
                 MouseArea {
                     id:delegateMouseArea
@@ -118,6 +120,18 @@ Item {
                         scheduleDialog.schedule = modelData
                         scheduleDialog.show()
                         console.log("onclicked delegate")
+                    }
+                }
+                Text {
+                    anchors.right: parent.right
+                    text:"löschen"
+                    font.bold: true
+                    font.pixelSize: 15
+                    color: deleteScheduleMouseArea.pressed ? "brightRed": "darkRed"
+                    MouseArea {
+                        id:deleteScheduleMouseArea
+                        anchors.fill: parent
+                        onClicked: endpoint.removeSchedule(modelData)
                     }
                 }
             }

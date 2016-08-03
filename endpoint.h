@@ -35,6 +35,7 @@ public:
     QVariant getSchedulesObjectList();
     void updateSchedules(QList<ScheduleEvent*> schedules);
     void addSchedule(ScheduleEvent::RepetitionType, QTime startTime, QTime endtime, QList<bool>weekdaysList=QList<bool>());
+    Q_INVOKABLE void removeSchedule(ScheduleEvent* event);
     enum EndpointType {
         switchbox,
         temperatureSensor,
