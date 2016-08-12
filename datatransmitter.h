@@ -19,6 +19,7 @@ public:
     void sendServerResetRequest();
     void sendAutoControlledRequest(QString MAC, int autoControlled);
     void sendRemoveSchedule(QString mac, int id);
+    void sendRemoveEndpoint(QString mac);
     void sendEndpointSchedule(QString mac, ScheduleEvent* scheduleEvent);
     QByteArray prepareMessage(MessageType type, QByteArray payload);
 public slots:

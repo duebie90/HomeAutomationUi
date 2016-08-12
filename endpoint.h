@@ -36,6 +36,7 @@ public:
     void updateSchedules(QList<ScheduleEvent*> schedules);
     void addSchedule(ScheduleEvent::RepetitionType, QTime startTime, QTime endtime, QList<bool>weekdaysList=QList<bool>());
     Q_INVOKABLE void removeSchedule(ScheduleEvent* event);
+    Q_INVOKABLE void remove();
     enum EndpointType {
         switchbox,
         temperatureSensor,
@@ -55,6 +56,7 @@ signals:
     void signalAutoModeChanged();
     void signalSchedulesChanged();
     void signalSendScheduleUpdate(QString mac, ScheduleEvent* event);
+    void signalRemovedByUser();
 private slots:
     void slotReceivedData();
     void slotDisconnected();

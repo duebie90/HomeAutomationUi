@@ -121,6 +121,7 @@ void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
         else {
             //it is not: delete it
             this->mapMac2endpoints.remove(mac);
+             endpointsListChanged = true;
         }
     }
 
@@ -144,7 +145,7 @@ void MainWindow::parseBasicEndpointInfo(QString message) {
 void MainWindow::updateMainScreen(QList<Endpoint *> endpointsUpdate)
 {
     EndpointOverviewScreen* endpointOverview = (EndpointOverviewScreen*)this->mainQmlScreen->getControllerInstance("EndpointOverviewScreen");
-    endpointOverview->setEndpoints(this->mapMac2endpoints.values());
+    endpointOverview->setEndpoints(this->mapMac2endpoints.values());    
 }
 
 void MainWindow::slotRequestStateChange(QString MAC, bool state) {

@@ -114,6 +114,12 @@ void Endpoint::removeSchedule(ScheduleEvent *event)
     emit signalSchedulesChanged();
 }
 
+void Endpoint::remove()
+{
+    DataTransmitter::getInstance()->sendRemoveEndpoint(getMAC());
+    emit signalRemovedByUser();
+}
+
 void Endpoint::requestStateChange(bool state)
 {
     if (this->state != state) {

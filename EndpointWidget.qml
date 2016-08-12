@@ -92,6 +92,7 @@ Item {
         id:headerBar
         property bool connected: (endpoint !== undefined ) ? endpoint.connected : false
         color: connected ? "green" : "#a9a9a9"
+        Behavior on color {ColorAnimation {duration:200}}
         border.color: "white"
         border.width: 1
         anchors.top: parent.top
@@ -115,6 +116,24 @@ Item {
             text: (endpoint !== undefined ) ? endpoint.type: ""
             color:"#333333"
             font.pixelSize: 20
+        }
+        Text {
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 10
+            text:"löschen"
+            font.bold: true
+            font.pixelSize: 15
+            visible: (opacity > 0) ? true : false
+            opacity: connected ? 0 : 1
+            Behavior on opacity { PropertyAnimation{duration:200}}
+            color: deleteScheduleMouseArea.pressed ? "brightRed": "darkRed"
+            MouseArea {
+                id:deleteScheduleMouseArea
+                anchors.fill: parent
+                onClicked: endpoint.remove()
+            }
         }
     }
     Row {

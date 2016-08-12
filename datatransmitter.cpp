@@ -75,6 +75,13 @@ void DataTransmitter::sendRemoveSchedule(QString mac, int id)
     sendMessage(MESSAGETYPE_UI_DELETE_SCHEDULE, payload);
 }
 
+void DataTransmitter::sendRemoveEndpoint(QString mac)
+{
+    QByteArray payload;
+    payload.append(mac);
+    sendMessage(MESSAGETYPE_UI_DELETE_ENDPOINT, payload);
+}
+
 void DataTransmitter::sendEndpointSchedule(QString mac, ScheduleEvent *scheduleEvent)
 {
     QByteArray payload;
