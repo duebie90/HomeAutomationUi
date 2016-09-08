@@ -3,6 +3,7 @@ import QtQuick 2.0
 Item {
     id:root
     objectName: "EndpointOverviewScreen"
+    anchors.fill: parent
     property variant selectedEndpoint: undefined
     property int selectedEndpointIndex: 0
     signal signalShownEndpointChanged(int index)

@@ -4,7 +4,6 @@
 
 #include <QStringListModel>
 
-#include <endpointwidget.h>
 #include <datatransmitter.h>
 #include <EndpointOverviewScreen.h>
 
@@ -12,10 +11,10 @@
 
 MainWindow::MainWindow(Client* client, QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    endpointWindow(NULL)
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setFixedSize(800,600);
     //save a reference to Client-Object
     this->client = client;
     this->dataTransmitter = DataTransmitter::getInstance();
@@ -23,7 +22,8 @@ MainWindow::MainWindow(Client* client, QWidget *parent) :
 
     mainQmlScreen = MainScreenWidget::getInstance();
     mainQmlScreen->show();
-    mainQmlScreen->navigate("EndpointOverviewScreen");
+    //mainQmlScreen->navigate("EndpointOverviewScreen");
+    mainQmlScreen->navigate("StartScreen");
 
     //UI connections
     connect(ui->buConnect, SIGNAL(clicked(bool)), this, SLOT(slotConnect(bool)));   
@@ -43,7 +43,7 @@ MainWindow::MainWindow(Client* client, QWidget *parent) :
     QSettings settings(QDir::currentPath() + "/settings.ini",  QSettings::IniFormat);
     //this->settings.setPath(QSettings::IniFormat, QSettings::UserScope, QApplication::applicationDirPath() );
     settings.beginGroup("MainWindow");
-    resize(settings.value("size", QSize(400, 400)).toSize());
+    //resize(settings.value("size", QSize(400, 400)).toSize());
     move(settings.value("pos", QPoint(200, 200)).toPoint());
     settings.endGroup();
 
@@ -90,13 +90,15 @@ void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
     //if endpoint are already known: update 'em
     foreach(Endpoint* endpoint, endpointsUpdate) {
         if (!this->mapMac2endpoints.keys().contains(endpoint->getMAC())) {
-            //this one is new
-            this->mapMac2endpoints.insert(endpoint->getMAC(), endpoint);
-            connect(endpoint, SIGNAL(signalSendScheduleUpdate(QString,ScheduleEvent*)),
+            //create a new one as a copy of the "update Endpoint"
+            Endpoint* newEndpoint = new Endpoint();
+            newEndpoint->copyEndpoint(endpoint);
+            this->mapMac2endpoints.insert(endpoint->getMAC(), newEndpoint);
+            connect(newEndpoint, SIGNAL(signalSendScheduleUpdate(QString,ScheduleEvent*)),
                     this, SLOT(slotSendEndpointScheduleUpdate(QString,ScheduleEvent*)));
-            connect(endpoint, SIGNAL(signalRequestStateChange(QString,bool)),
+            connect(newEndpoint, SIGNAL(signalRequestStateChange(QString,bool)),
                     this, SLOT(slotRequestStateChange(QString,bool)));
-            connect(endpoint, SIGNAL(signalRequestStateChange(QString,bool)),
+            connect(newEndpoint, SIGNAL(signalRequestStateChange(QString,bool)),
                     this, SLOT(slotRequestStateChange(QString,bool)));
             endpointsListChanged = true;
         }
@@ -128,6 +130,7 @@ void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
    if (endpointsListChanged) {
         updateMainScreen(this->mapMac2endpoints.values());
    }
+   endpointsUpdate.clear();
 }
 
 void MainWindow::slotReceivedEndpointSchedules(QList<ScheduleEvent *> schedulesList, QString MAC)
@@ -152,16 +155,6 @@ void MainWindow::slotRequestStateChange(QString MAC, bool state) {
     this->dataTransmitter->sendStateRequestDigital(MAC, state);
 }
 
-void MainWindow::slotEndpointWidgetClicked(Endpoint* endpoint)
-{
-    if(this->endpointWindow != NULL) {
-        if (!this->endpointWindow->isVisible()) {
-            this->endpointWindow->show();
-        }
-        this->endpointWindow->setEndpoint(endpoint);
-    }
-}
-
 void MainWindow::slotSendEndpointScheduleUpdate(QString mac, ScheduleEvent *event)
 {
     //send one schedule to server which was created or edited
@@ -180,9 +173,6 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 void MainWindow::slotQuit() {
     qDebug()<<__FUNCTION__;
     //save current window settings
-    if (endpointWindow != NULL) {
-        this->endpointWindow->close();
-    }
     this->close();
     emit signalQuit();
 }
@@ -191,10 +181,7 @@ void MainWindow::slotResetServer() {
     this->dataTransmitter->sendServerResetRequest();
     this->mapMac2endpoints.clear();
     QList<Endpoint*> emptyList;
-    updateMainScreen(emptyList);
-    if (endpointWindow != NULL) {
-        this->endpointWindow->close();
-    }
+    updateMainScreen(emptyList);    
 }
 
 void MainWindow::slotResetUI() {

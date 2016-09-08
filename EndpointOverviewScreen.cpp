@@ -21,12 +21,11 @@ QString EndpointOverviewScreen::getScreenName()
     return this->screenName;
 }
 
-void EndpointOverviewScreen::setQmlContext(QQmlContext* rootContext)
+void EndpointOverviewScreen::setQmlContextProperties(QQmlContext *rootContext)
 {
     rootContext->setContextProperty("endpoints", QVariant::fromValue(QObjectList()));
     rootContext->setContextProperty("schedules", QVariant::fromValue(QObjectList()));
     rootContext->setContextProperty("overviewScreen", this);
-    this->rootContext = rootContext;    
 }
 
 void EndpointOverviewScreen::setQmlConnections(QQuickItem* rootObject)
@@ -57,7 +56,9 @@ void EndpointOverviewScreen::setEndpoints(QList<Endpoint *> endpoints)
     foreach(Endpoint* endpoint, this->endpoints) {
         endpointsObjectList.append((QObject*)endpoint);
     }
-    rootContext->setContextProperty("endpoints", QVariant::fromValue(endpointsObjectList));
+    if(getRootContext() != NULL) {
+        getRootContext()->setContextProperty("endpoints", QVariant::fromValue(endpointsObjectList));
+    }
     if(justInitialized && !this->endpoints.empty()) {
         slotShownEndpointChanged(0);
     }
@@ -77,7 +78,9 @@ void EndpointOverviewScreen::slotShownEndpointChanged(int index)
         //endpointSchedulesStringList.append(event->toString());
         endpointsSchedulesObjectList.append( (QObject*)event);
     }
-    rootContext->setContextProperty("schedules", QVariant::fromValue(endpointsSchedulesObjectList));
+    if(getRootContext() != NULL) {
+        getRootContext()->setContextProperty("schedules", QVariant::fromValue(endpointsSchedulesObjectList));
+    }
     //rootContext->setContextProperty("schedules", endpointsSchedulestStringList);
     this->shownEndpointIndex = index;
 }

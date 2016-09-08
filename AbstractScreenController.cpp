@@ -5,7 +5,9 @@
 AbstractScreenController::AbstractScreenController(QObject *parent) :
     QObject(parent),
     qmlPath(""),
-    screenName("")
+    screenName(""),
+    rootContext(NULL),
+    rootObject(NULL)
 {
 
 }
@@ -22,7 +24,29 @@ QString AbstractScreenController::getScreenName()
 
 void AbstractScreenController::setQmlContext(QQmlContext* rootContext)
 {
+    this->rootContext = rootContext;
+    setQmlContextProperties(rootContext);
+}
 
+QQmlContext *AbstractScreenController::getRootContext()
+{
+    return this->rootContext;
+}
+
+void AbstractScreenController::setQmlContextProperties(QQmlContext *rootContext)
+{
+
+}
+
+void AbstractScreenController::setQmlRootObject(QQuickItem *rootObject)
+{
+    this->rootObject = rootObject;
+    setQmlConnections(rootObject);
+}
+
+QQuickItem *AbstractScreenController::getRootObject()
+{
+    return this->rootObject;
 }
 
 void AbstractScreenController::setQmlConnections(QQuickItem* rootObject)

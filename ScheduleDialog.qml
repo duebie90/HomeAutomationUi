@@ -13,19 +13,19 @@ Item{
     property variant schedule:undefined
     property bool weekdaysEnabled: true//intervallCombo.currentIndex !=4
     onScheduleChanged: {
-        intervallCombo.currentIndex = schedule.repetition
-        hoursTextFieldStart.text = schedule.eventStartTime.toLocaleTimeString(Qt.locale("de_DE"),"hh")
-        minutesTextFieldStart.text = schedule.eventStartTime.toLocaleTimeString(Qt.locale("de_DE"),"mm")
-        hoursTextFieldEnd.text = schedule.eventEndTime.toLocaleTimeString(Qt.locale("de_DE"),"hh")
-        minutesTextFieldEnd.text = schedule.eventEndTime.toLocaleTimeString(Qt.locale("de_DE"),"mm")
-        console.log("ScheduleDialog weekdays[0]=" + schedule.weekdays[0])
-        monday.checked = schedule.weekdays[0]
-        tuesday.checked = schedule.weekdays[1]
-        wednesday.checked = schedule.weekdays[2]
-        thursday.checked = schedule.weekdays[3]
-        friday.checked = schedule.weekdays[4]
-        saturday.checked = schedule.weekdays[5]
-        sunday.checked = schedule.weekdays[6]
+        intervallCombo.currentIndex = (schedule !== undefined) ? schedule.repetition : 0
+        hoursTextFieldStart.text = (schedule !== undefined) ? schedule.eventStartTime.toLocaleTimeString(Qt.locale("de_DE"),"hh"): ""
+        minutesTextFieldStart.text = (schedule !== undefined) ? schedule.eventStartTime.toLocaleTimeString(Qt.locale("de_DE"),"mm"): ""
+        hoursTextFieldEnd.text = (schedule !== undefined) ? schedule.eventEndTime.toLocaleTimeString(Qt.locale("de_DE"),"hh"): ""
+        minutesTextFieldEnd.text = (schedule !== undefined) ? schedule.eventEndTime.toLocaleTimeString(Qt.locale("de_DE"),"mm"): ""
+        console.log("ScheduleDialog weekdays[0]=" + (schedule !== undefined) ? schedule.weekdays[0]: "")
+        monday.checked = (schedule !== undefined) ? schedule.weekdays[0]: false
+        tuesday.checked = (schedule !== undefined) ? schedule.weekdays[1]: false
+        wednesday.checked = (schedule !== undefined) ? schedule.weekdays[2]: false
+        thursday.checked = (schedule !== undefined) ? schedule.weekdays[3]: false
+        friday.checked = (schedule !== undefined) ? schedule.weekdays[4]: false
+        saturday.checked = (schedule !== undefined) ? schedule.weekdays[5]: false
+        sunday.checked = (schedule !== undefined) ? schedule.weekdays[6] : false
     }
 
     Rectangle{

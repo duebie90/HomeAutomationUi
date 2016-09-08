@@ -10,10 +10,8 @@
 #include <QStandardItemModel>
 #include <QTableView>
 #include <endpoint.h>
-#include <endpointwidget.h>
 #include <client.h>
 #include <datatransmitter.h>
-#include <QmlEndpointWidget.h>
 #include <MainScreenWidget.h>
 
 namespace Ui {
@@ -37,7 +35,6 @@ private slots:
     void slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate);
     void slotReceivedEndpointSchedules(QList<ScheduleEvent*> schedulesList, QString MAC);
     void slotRequestStateChange(QString MAC, bool state);
-    void slotEndpointWidgetClicked(Endpoint* endpoint);
 
     void slotSendEndpointScheduleUpdate(QString mac, ScheduleEvent* event);
 
@@ -61,11 +58,8 @@ private:
     Client* client;
     QStandardItemModel* tableDataModel;
     QTableView* endpointsTable;
-    QMap<QString, Endpoint*> mapMac2endpoints;
-    QList<EndpointWidget*> endpointWidgets;
-    QMap<QString, EndpointWidget*> mapMacToEndpointWidget;
-    DataTransmitter* dataTransmitter;
-    QmlEndpointWidget* endpointWindow;
+    QMap<QString, Endpoint*> mapMac2endpoints;    
+    DataTransmitter* dataTransmitter;    
     MainScreenWidget* mainQmlScreen;
 
 

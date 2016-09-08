@@ -19,28 +19,27 @@ SOURCES += main.cpp\
     endpoint.cpp \
     datareceiver.cpp \
     datatransmitter.cpp \
-    endpointwidget.cpp \
     QmlEndpointWidget.cpp \
     MainScreenWidget.cpp \
     EndpointOverviewScreen.cpp \
     AbstractScreenController.cpp \
-    ../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.cpp
+    ../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.cpp \
+    StartScreenController.cpp
 
 HEADERS  += mainwindow.h \
     client.h \
     endpoint.h \
     datareceiver.h \
-    datatransmitter.h \
-    endpointwidget.h \
+    datatransmitter.h \    
     ../HomeAutomationServer/HomeAutomation-Network/messagetype.h \
     QmlEndpointWidget.h \
     MainScreenWidget.h \
     EndpointOverviewScreen.h \
     AbstractScreenController.h \
-    ../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.h
+    ../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.h \
+    StartScreenController.h
 
 FORMS    += mainwindow.ui \
-    endpointwidget.ui \
     MainScreenWidget.ui
 
 RC_FILE = uiPrototype.rc

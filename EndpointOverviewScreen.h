@@ -12,7 +12,7 @@ public:
     EndpointOverviewScreen(QObject* parent = 0);
     virtual QString getQmlPath();
     virtual QString getScreenName();
-    virtual void setQmlContext(QQmlContext* rootContext);
+    virtual void setQmlContextProperties(QQmlContext* rootContext);
     virtual void setQmlConnections(QQuickItem* rootObject);
     void setEndpoints(QList<Endpoint*> endpoints);
     int getShownEndpointIndex();
@@ -23,7 +23,6 @@ public slots:
 private:
     QString qmlPath;
     QString screenName;
-    QQmlContext*  rootContext;
     QList<Endpoint*> endpoints;
     int shownEndpointIndex;
     //temporary storage for new schedules

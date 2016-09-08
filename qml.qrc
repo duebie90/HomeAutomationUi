@@ -8,6 +8,7 @@
         <file>EndpointWidget.qml</file>
         <file>SideBarEndpointList.qml</file>
         <file>ScheduleDialog.qml</file>
+        <file>StartScreen.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/add-square.png</file>

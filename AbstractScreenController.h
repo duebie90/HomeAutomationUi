@@ -14,7 +14,11 @@ public:
     explicit AbstractScreenController(QObject *parent = 0);
     virtual QString getQmlPath();
     virtual QString getScreenName();
-    virtual void setQmlContext(QQmlContext* rootContext);
+    void setQmlContext(QQmlContext* rootContext);
+    QQmlContext* getRootContext();
+    virtual void setQmlContextProperties(QQmlContext* rootContext);
+    void setQmlRootObject(QQuickItem* rootObject);
+    QQuickItem* getRootObject();
     virtual void setQmlConnections(QQuickItem* rootObject);
 
 
@@ -24,6 +28,8 @@ public slots:
 private:
     QString qmlPath;
     QString screenName;
+    QQmlContext*  rootContext;
+    QQuickItem* rootObject;
 };
 
 #endif // ABSTRACTSCREEN_H

@@ -2,6 +2,7 @@
 #include "ui_MainScreenWidget.h"
 #include <QDebug>
 #include <EndpointOverviewScreen.h>
+#include <StartScreenController.h>
 
 MainScreenWidget* MainScreenWidget::_instance = NULL;
 
@@ -11,6 +12,7 @@ MainScreenWidget::MainScreenWidget(QWidget *parent) :
     currentScreen(NULL)
 {
     ui->setupUi(this);
+    setFixedSize(800,600);
     qmlWidget = this->ui->quickWidget;
     qmlWidget->rootContext()->setContextProperty("mainContentSource", "");
     qmlWidget->setSource(QUrl(QStringLiteral("qrc:/MainQmlScreen.qml")));
@@ -64,7 +66,7 @@ void MainScreenWidget::slotQmlLoaded()
     QQuickItem* loadedContentRootObject;
     loadedContentRootObject = rootObject->findChild<QQuickItem*>(screenName);
     if(loadedContentRootObject != NULL) {
-        this->currentScreen->setQmlConnections(loadedContentRootObject);
+        this->currentScreen->setQmlRootObject(loadedContentRootObject);
     }
 }
 
@@ -72,6 +74,7 @@ void MainScreenWidget::prepareScreens()
 {
     //create instances or get pointer to them and save it inside map
     mapScreenNamesToScreenController.insert("EndpointOverviewScreen", new EndpointOverviewScreen());
+    mapScreenNamesToScreenController.insert("StartScreen", new StartScreenController());
 
 }
 

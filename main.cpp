@@ -14,7 +14,6 @@ int main(int argc, char *argv[])
     DataReceiver dataReceiver;
 
     //Connections from MainWindow to TcpClient
-    QObject::connect(&mainWindow, SIGNAL(signalSend(QByteArray)), &client, SLOT(slotSend(QByteArray)));
     QObject::connect(&mainWindow, SIGNAL(signalConnect(QHostAddress,quint16)),
             &client, SLOT(slotConnectToHost(QHostAddress,quint16)));
     QObject::connect(&mainWindow, SIGNAL(signalDisconnect()), &client, SLOT(slotDisconnect()));
