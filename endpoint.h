@@ -19,8 +19,10 @@ class Endpoint: public QObject
     Q_PROPERTY(QVariant schedules READ getSchedulesObjectList NOTIFY signalSchedulesChanged)
 
 public:
-    Endpoint(QTcpSocket* socket, QString alias, QString type, QString MAC, QObject* parent=0);
+    Endpoint(QTcpSocket* socket=NULL, QString alias="", QString type="", QString MAC="", QObject* parent=0);
+    void copyEndpoint(Endpoint* otherEndpoint);
     void updateSocket(QTcpSocket* newSocket);
+    QTcpSocket* getSocket();
     bool isConnected();
     void setConnected(bool connected);
     QString getAlias();
@@ -60,6 +62,7 @@ signals:
 private slots:
     void slotReceivedData();
     void slotDisconnected();
+    void slotPendingRequestNoUpdateTimerTimeout();
 private:
     void receivedData();
     QString alias;
@@ -73,6 +76,8 @@ private:
     //temporary storage for new schedules
     QList<bool> checkedWeekdays;
     ScheduleEvent::RepetitionType chosenRepetitionType;
+    QTimer* pendingRequestNoUpdateTimer;
+     bool stateChangeRequestPending;
 
 };
 

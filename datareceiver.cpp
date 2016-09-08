@@ -64,7 +64,6 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
 void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     QString alias, MAC, endpointType, state, connected, autoControlled;
     QList<Endpoint*> endpointsUpdate;
-    Endpoint* newEndpoint;
     //0x1F = unit separator
     QList<QByteArray> payloadParts = payload.split(0x1F);
 
@@ -80,14 +79,19 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
                 state = payloadParts.at(i + 3);
                 connected = payloadParts.at(i + 4);
                 autoControlled = payloadParts.at(i + 5);
-                newEndpoint = new Endpoint(NULL, alias, endpointType, MAC);
+                //ToDo turn into stack-variable
+
+                Endpoint* newEndpoint = new Endpoint(NULL, alias, endpointType, MAC);
                 newEndpoint->setState(state == "1");
                 newEndpoint->setAutoMode(autoControlled == "1");
                 newEndpoint->setConnected(connected == "1");
                 endpointsUpdate.append(newEndpoint);
             }
-            else {
+            else if (payloadParts.length() == 1){
+                //Empty list of endpoint states
+            } else {
                 qDebug()<<__FUNCTION__<<"Message error. Data incomplete";
+                return;
             }
         }
         emit signalReceivedEndpointList(endpointsUpdate);

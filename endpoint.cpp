@@ -4,10 +4,14 @@
 #include <MainScreenWidget.h>
 #include <QDataStream>
 
+#define UPDATE_BLOCK_INTERVALL 1000 //ms
+
 Endpoint::Endpoint(QTcpSocket* socket, QString alias, QString type, QString MAC, QObject* parent):
     QObject(parent),
     autoMode(false),
-    chosenRepetitionType(ScheduleEvent::REPETITION_TYPE_WEEKLY)
+    chosenRepetitionType(ScheduleEvent::REPETITION_TYPE_WEEKLY),
+    stateChangeRequestPending(false),
+    pendingRequestNoUpdateTimer(new QTimer())
 {
     this->clientSocket = socket;
     this->alias = alias;
@@ -19,9 +23,17 @@ Endpoint::Endpoint(QTcpSocket* socket, QString alias, QString type, QString MAC,
         connect(clientSocket, SIGNAL(disconnected()), this, SLOT(slotDisconnected()));
         this->connected = true;
     }
+    connect(this->pendingRequestNoUpdateTimer, SIGNAL(timeout()), this, SLOT(slotPendingRequestNoUpdateTimerTimeout()));
+    this->checkedWeekdays = {false, false, false, false, false, false, false};
+}
 
-
-this->checkedWeekdays = {false, false, false, false, false, false, false};
+void Endpoint::copyEndpoint(Endpoint *otherEndpoint)
+{
+    this->clientSocket = otherEndpoint->getSocket();
+    this->alias = otherEndpoint->getAlias();
+    this->type = otherEndpoint->getType();
+    this->MAC = otherEndpoint->getMAC();
+    this->state = otherEndpoint->getState();
 }
 
 void Endpoint::slotReceivedData() {
@@ -124,8 +136,12 @@ void Endpoint::requestStateChange(bool state)
 {
     if (this->state != state) {
         this->state = state;
-        emit signalUpdateEndpoint();
-        emit signalRequestStateChange(getMAC(), state);
+        emit signalUpdateEndpoint();        
+        DataTransmitter::getInstance()->sendStateRequestDigital(getMAC(), state);
+        this->stateChangeRequestPending = true;
+        this->pendingRequestNoUpdateTimer->setInterval(UPDATE_BLOCK_INTERVALL);
+        this->pendingRequestNoUpdateTimer->setSingleShot(true);
+        this->pendingRequestNoUpdateTimer->start();
     }
 }
 
@@ -207,10 +223,20 @@ void Endpoint::slotDisconnected() {
     this->connected = false;
 }
 
+void Endpoint::slotPendingRequestNoUpdateTimerTimeout()
+{
+    this->stateChangeRequestPending = false;
+}
+
 void Endpoint::updateSocket(QTcpSocket* newSocket) {
     this->clientSocket = newSocket;
     this->connected = true;
     emit signalUpdateEndpoint();
+}
+
+QTcpSocket *Endpoint::getSocket()
+{
+    return this->clientSocket;
 }
 
 bool Endpoint:: isConnected() {
@@ -245,6 +271,9 @@ bool Endpoint::isAutoOn()
     return this->autoMode;
 }
 void Endpoint::setState(bool state) {
-    this->state = state;
-    emit signalUpdateEndpoint();
+    if (!this->stateChangeRequestPending) {
+        //User manually requested a state change: update is blocked
+        this->state = state;
+        emit signalUpdateEndpoint();
+    }
 }
