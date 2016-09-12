@@ -1,10 +1,25 @@
 #include "datareceiver.h"
 #include <../HomeAutomationServer/HomeAutomation-Network/messagetype.h>
+#include <MainScreenWidget.h>
+
+DataReceiver* DataReceiver::_instance = NULL;
 
 DataReceiver::DataReceiver(QObject* parent):
     QObject(parent)
 {
 
+}
+
+DataReceiver::~DataReceiver()
+{
+    delete _instance;
+}
+DataReceiver *DataReceiver::getInstance()
+{
+    if(_instance == NULL) {
+        _instance = new DataReceiver();
+    }
+    return _instance;
 }
 
 void DataReceiver::slotReceivedData(QByteArray data) {
@@ -68,7 +83,10 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     QList<QByteArray> payloadParts = payload.split(0x1F);
 
     switch(type) {
-    case MESSAGETYPE_ENDPOINT_IDENT:
+    case MESSAGETYPE_UI_INFO_ACK: {
+        //Server accepted the info message and authentication
+        MainScreenWidget::getInstance()->navigate("EndpointOverviewScreen");
+    }
         break;
     case MESSAGETYPE_ENDPOINTS_STATES_LIST:
         for(int i= 0; i< (payloadParts.length()) ; i+=6) {

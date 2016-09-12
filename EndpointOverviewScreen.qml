@@ -17,7 +17,7 @@ Item {
 //only one is shown at the same time
    Repeater {
        id:endpointWidgetsList
-       model: endpoints
+       model: overviewScreen.endpoints
        delegate: EndpointWidget {
             endpoint: modelData
             height:root.height

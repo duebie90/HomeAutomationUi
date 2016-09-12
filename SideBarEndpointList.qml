@@ -12,7 +12,7 @@ Item {
     }
     ListView {
         anchors.fill: parent
-        model: endpoints
+        model: overviewScreen.endpoints
         delegate: Rectangle{
             width:root.width
             height:50
@@ -24,7 +24,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: 5
                 id:endpointNameText
-                text:name
+                text:modelData.name
                 font.pixelSize: 15
                 font.bold:false
                 color: "#a9a9a9"
@@ -33,8 +33,8 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top:endpointNameText.bottom
                 anchors.topMargin: 5
-                text:connected ? "online" : "offline"
-                color:connected ? "darkGreen" : "darkRed"
+                text:modelData.connected ? "online" : "offline"
+                color:modelData.connected ? "darkGreen" : "darkRed"
                 font.pixelSize: 10
                 font.italic: true
             }
@@ -46,7 +46,7 @@ Item {
                 height:20
                 width:20
                 radius:10
-                color: switchedState ? "green" : "#262626"
+                color: modelData.switchedState ? "green" : "#262626"
                 border.color: "#a9a9a9"
                 border.width: 2
 

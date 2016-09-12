@@ -7,6 +7,7 @@
 
 class EndpointOverviewScreen : public AbstractScreenController
 {
+     Q_PROPERTY(QVariant endpoints READ getEndpoints NOTIFY signalEndpointsChanged)
      Q_OBJECT
 public:
     EndpointOverviewScreen(QObject* parent = 0);
@@ -18,6 +19,9 @@ public:
     int getShownEndpointIndex();
     Q_INVOKABLE void weekdayChecked(int weekday);
     Q_INVOKABLE void saveNewSchedule(QString startTime, QString endTime);
+    QVariant getEndpoints();
+signals:
+    void signalEndpointsChanged();
 public slots:
     void slotShownEndpointChanged(int index);
 private:
@@ -27,6 +31,7 @@ private:
     int shownEndpointIndex;
     //temporary storage for new schedules
     QList<bool> checkedWeekdays;
+    bool justInitialized;
 };
 
 #endif // ENDPOINTOVERVIEWSCREEN_H

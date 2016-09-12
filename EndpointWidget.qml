@@ -5,7 +5,7 @@ import QtQuick.Controls 2.0
 Item {
     id:root
     visible: shown
-    onVisibleChanged: console.log("on visible changed EPW")
+    //onVisibleChanged: console.log("on visible changed EPW")
     property int defaultX:200
     property variant endpoint: undefined
     property bool shown: false
@@ -126,7 +126,7 @@ Item {
             font.bold: true
             font.pixelSize: 15
             visible: (opacity > 0) ? true : false
-            opacity: connected ? 0 : 1
+            opacity: headerBar.connected ? 0 : 1
             Behavior on opacity { PropertyAnimation{duration:200}}
             color: deleteScheduleMouseArea.pressed ? "brightRed": "darkRed"
             MouseArea {

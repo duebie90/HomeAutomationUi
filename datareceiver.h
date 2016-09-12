@@ -10,8 +10,7 @@ class DataReceiver: public QObject
 {
     Q_OBJECT
 public:
-    DataReceiver(QObject* parent=0);
-
+    static DataReceiver* getInstance();
 public slots:
     void slotReceivedData(QByteArray data);
 signals:
@@ -19,6 +18,10 @@ signals:
     void signalReceivedEndpointSchedules(QList<ScheduleEvent*> schedulesUpdate, QString MAC);
     //...
 private:
+    DataReceiver(QObject* parent=0);
+    ~DataReceiver();
+
+    static DataReceiver* _instance;
     int processProtocollHeader(QByteArray data);
     void processMessage(MessageType type, QByteArray message);
 

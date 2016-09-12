@@ -5,6 +5,9 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QTime>
+
+Client* Client::_instance = NULL;
+
 Client::Client()
 {
     this->tcpSocket = new QTcpSocket(this);
@@ -17,6 +20,11 @@ Client::Client()
     networkSession = new QNetworkSession(defaultConfig, this);
     connect( networkSession, SIGNAL(opened()), this, SLOT(slotSessionOpened()));
     networkSession->open();
+}
+
+Client::~Client()
+{
+    delete _instance;
 }
 
 void Client::slotDisplayError(QAbstractSocket::SocketError socketError) {
@@ -89,6 +97,14 @@ void Client::slotDisconnect() {
 
 bool Client::isConnected() {
     return this->tcpSocket->isOpen();
+}
+
+Client *Client::getInstance()
+{
+    if (_instance == NULL) {
+        _instance = new Client();
+    }
+    return _instance;
 }
 
 int Client::send(QByteArray data) {

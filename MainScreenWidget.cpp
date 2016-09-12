@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <EndpointOverviewScreen.h>
 #include <StartScreenController.h>
+#include <client.h>
+#include <StartScreenController.h>
 
 MainScreenWidget* MainScreenWidget::_instance = NULL;
 
@@ -68,6 +70,10 @@ void MainScreenWidget::slotQmlLoaded()
     if(loadedContentRootObject != NULL) {
         this->currentScreen->setQmlRootObject(loadedContentRootObject);
     }
+    if (screenName == "StartScreen") {
+        connect((StartScreenController*)this->currentScreen, SIGNAL(signalConnect(QHostAddress,quint16)), Client::getInstance(), SLOT(slotConnectToHost(QHostAddress,quint16)));
+    }
+
 }
 
 void MainScreenWidget::prepareScreens()

@@ -6,7 +6,8 @@ EndpointOverviewScreen::EndpointOverviewScreen(QObject* parent):
     AbstractScreenController(parent),
     qmlPath("EndpointOverviewScreen.qml"),
     screenName("EndpointOverviewScreen"),
-    shownEndpointIndex(0)
+    shownEndpointIndex(0),
+    justInitialized(true)
 {
 
 }
@@ -26,6 +27,7 @@ void EndpointOverviewScreen::setQmlContextProperties(QQmlContext *rootContext)
     rootContext->setContextProperty("endpoints", QVariant::fromValue(QObjectList()));
     rootContext->setContextProperty("schedules", QVariant::fromValue(QObjectList()));
     rootContext->setContextProperty("overviewScreen", this);
+    this->justInitialized = true;
 }
 
 void EndpointOverviewScreen::setQmlConnections(QQuickItem* rootObject)
@@ -45,23 +47,33 @@ void EndpointOverviewScreen::saveNewSchedule(QString startTime, QString endTime)
     this->checkedWeekdays = {false, false, false, false, false, false, false};
 }
 
-void EndpointOverviewScreen::setEndpoints(QList<Endpoint *> endpoints)
+QVariant EndpointOverviewScreen::getEndpoints()
 {
-    bool justInitialized = false;
-    if(this->endpoints.empty()) {
-        justInitialized = true;
-    }
-    this->endpoints = endpoints;
     QList<QObject*> endpointsObjectList;
     foreach(Endpoint* endpoint, this->endpoints) {
         endpointsObjectList.append((QObject*)endpoint);
     }
-    if(getRootContext() != NULL) {
-        getRootContext()->setContextProperty("endpoints", QVariant::fromValue(endpointsObjectList));
+    return QVariant::fromValue(endpointsObjectList);
+}
+
+void EndpointOverviewScreen::setEndpoints(QList<Endpoint *> endpoints)
+{
+    if(this->endpoints.empty()) {
+        justInitialized = true;
     }
-    if(justInitialized && !this->endpoints.empty()) {
+    this->endpoints = endpoints;
+//    QList<QObject*> endpointsObjectList;
+//    foreach(Endpoint* endpoint, this->endpoints) {
+//        endpointsObjectList.append((QObject*)endpoint);
+//    }
+//    if(getRootContext() != NULL) {
+//        getRootContext()->setContextProperty("endpoints", QVariant::fromValue(endpointsObjectList));
+//    }
+    if (this->justInitialized && !this->endpoints.empty()) {
         slotShownEndpointChanged(0);
     }
+    this->justInitialized = false;
+    emit signalEndpointsChanged();
 }
 
 int EndpointOverviewScreen::getShownEndpointIndex()

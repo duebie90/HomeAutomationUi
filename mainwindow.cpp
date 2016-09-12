@@ -81,6 +81,12 @@ void MainWindow::slotConnected() {
 void MainWindow::slotDisconnected() {
     this->ui->buConnect->setText("verbinden");
     this->ui->buConnect->setStyleSheet("");
+    foreach(Endpoint* endpoint, this->mapMac2endpoints.values()) {
+        endpoint->setConnected(false);
+    }
+    updateMainScreen(this->mapMac2endpoints.values());
+    mainQmlScreen->navigate("StartScreen");
+    this->firstUpdateSinceConnect = true;
 }
 
 //void MainWindow::slotReceivedData(QString message) {
@@ -127,7 +133,7 @@ void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
         }
     }
 
-   if (endpointsListChanged) {
+   if (endpointsListChanged || firstUpdateSinceConnect) {
         updateMainScreen(this->mapMac2endpoints.values());
    }
    endpointsUpdate.clear();

@@ -11,7 +11,7 @@ class Client: public QObject
 {
     Q_OBJECT
 public:
-    Client();
+    static Client* getInstance();
     int send(QByteArray data);
 public slots:
     void slotConnectToHost(QHostAddress hostAdress, quint16 port);
@@ -28,8 +28,10 @@ signals:
     void signalConnected();
     void signalReceivedData(QByteArray message);
 private:
+    Client();
+    ~Client();
 
-
+    static Client* _instance;
     QTcpSocket* tcpSocket;
     QString dataReceived;
     quint16 blockSize;

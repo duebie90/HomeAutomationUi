@@ -18,7 +18,7 @@ Item{
         minutesTextFieldStart.text = (schedule !== undefined) ? schedule.eventStartTime.toLocaleTimeString(Qt.locale("de_DE"),"mm"): ""
         hoursTextFieldEnd.text = (schedule !== undefined) ? schedule.eventEndTime.toLocaleTimeString(Qt.locale("de_DE"),"hh"): ""
         minutesTextFieldEnd.text = (schedule !== undefined) ? schedule.eventEndTime.toLocaleTimeString(Qt.locale("de_DE"),"mm"): ""
-        console.log("ScheduleDialog weekdays[0]=" + (schedule !== undefined) ? schedule.weekdays[0]: "")
+        //console.log("ScheduleDialog weekdays[0]=" + (schedule !== undefined) ? schedule.weekdays[0]: "")
         monday.checked = (schedule !== undefined) ? schedule.weekdays[0]: false
         tuesday.checked = (schedule !== undefined) ? schedule.weekdays[1]: false
         wednesday.checked = (schedule !== undefined) ? schedule.weekdays[2]: false

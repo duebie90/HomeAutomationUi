@@ -61,6 +61,7 @@ private:
     QMap<QString, Endpoint*> mapMac2endpoints;    
     DataTransmitter* dataTransmitter;    
     MainScreenWidget* mainQmlScreen;
+    bool firstUpdateSinceConnect;
 
 
 };
