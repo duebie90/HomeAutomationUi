@@ -14,7 +14,7 @@ MainScreenWidget::MainScreenWidget(QWidget *parent) :
     currentScreen(NULL)
 {
     ui->setupUi(this);
-    setFixedSize(800,600);
+    setFixedSize(800,621);
     qmlWidget = this->ui->quickWidget;
     qmlWidget->rootContext()->setContextProperty("mainContentSource", "");
     qmlWidget->setSource(QUrl(QStringLiteral("qrc:/MainQmlScreen.qml")));
@@ -71,9 +71,8 @@ void MainScreenWidget::slotQmlLoaded()
         this->currentScreen->setQmlRootObject(loadedContentRootObject);
     }
     if (screenName == "StartScreen") {
-        connect((StartScreenController*)this->currentScreen, SIGNAL(signalConnect(QHostAddress,quint16)), Client::getInstance(), SLOT(slotConnectToHost(QHostAddress,quint16)));
+        connect((StartScreenController*)this->currentScreen, SIGNAL(signalConnect(QHostAddress,quint16)), Client::getInstance(), SLOT(slotConnectToHost(QHostAddress,quint16)), Qt::UniqueConnection);
     }
-
 }
 
 void MainScreenWidget::prepareScreens()

@@ -52,7 +52,7 @@ void Client::slotDisplayError(QAbstractSocket::SocketError socketError) {
         msgBox.show();
         //msgBox.exec();
         msgBox.setFocus();
-
+        emit signalConnectFailed(msgBox.text());
 }
 
 void Client::slotReceivedData() {

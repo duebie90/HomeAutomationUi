@@ -204,7 +204,7 @@ Item {
         anchors.top: autoSwitchCaption.bottom
         anchors.topMargin: 2
         anchors.left: autoSwitchCaption.left
-        checked:(endpoint !== undefined ) ? autoMode : false
+        checked:(endpoint !== undefined ) ? endpoint.autoMode : false
         onCheckedChanged: endpoint.requestAutoMode(checked)
     }
 

@@ -26,6 +26,7 @@ private slots:
 signals:
     void signalDisconnected();
     void signalConnected();
+    void signalConnectFailed(QString reasonString);
     void signalReceivedData(QByteArray message);
 private:
     Client();

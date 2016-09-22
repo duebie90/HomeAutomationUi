@@ -14,7 +14,7 @@ MainWindow::MainWindow(Client* client, QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setFixedSize(800,600);
+    setFixedSize(800,621);
     //save a reference to Client-Object
     this->client = client;
     this->dataTransmitter = DataTransmitter::getInstance();
