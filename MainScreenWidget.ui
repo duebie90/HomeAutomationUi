@@ -37,17 +37,36 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuToDo_MenuBar">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>ToDo:MenuBar</string>
+     <string>Programm</string>
     </property>
-    <addaction name="actionSample_Entry"/>
+    <addaction name="actionQuit"/>
    </widget>
-   <addaction name="menuToDo_MenuBar"/>
+   <widget class="QMenu" name="menuServer">
+    <property name="title">
+     <string>Server</string>
+    </property>
+    <addaction name="actionDisconnect"/>
+    <addaction name="actionResetServer"/>
+    <addaction name="separator"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuServer"/>
   </widget>
-  <action name="actionSample_Entry">
+  <action name="actionQuit">
    <property name="text">
-    <string>sample Entry</string>
+    <string>Beenden</string>
+   </property>
+  </action>
+  <action name="actionDisconnect">
+   <property name="text">
+    <string>Verbindung trennen</string>
+   </property>
+  </action>
+  <action name="actionResetServer">
+   <property name="text">
+    <string>Zurücksetzen</string>
    </property>
   </action>
  </widget>

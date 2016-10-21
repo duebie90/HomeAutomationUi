@@ -77,7 +77,7 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
 }
 
 void DataReceiver::processMessage(MessageType type, QByteArray payload) {
-    QString alias, MAC, endpointType, state, connected, autoControlled;
+    QString alias, MAC, endpointType, state, connected, autoControlled, stateChangePending;
     QList<Endpoint*> endpointsUpdate;
     //0x1F = unit separator
     QList<QByteArray> payloadParts = payload.split(0x1F);
@@ -89,7 +89,7 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     }
         break;
     case MESSAGETYPE_ENDPOINTS_STATES_LIST:
-        for(int i= 0; i< (payloadParts.length()) ; i+=6) {
+        for(int i= 0; i< (payloadParts.length()) ; i+=7) {
             if(payloadParts.length() >= i+6) {
                 alias   =   payloadParts.at(i + 0);
                 MAC     =   payloadParts.at(i + 1);
@@ -97,12 +97,14 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
                 state = payloadParts.at(i + 3);
                 connected = payloadParts.at(i + 4);
                 autoControlled = payloadParts.at(i + 5);
+                stateChangePending = payloadParts.at(i + 6);
                 //ToDo turn into stack-variable
 
                 Endpoint* newEndpoint = new Endpoint(NULL, alias, endpointType, MAC);
                 newEndpoint->setState(state == "1");
                 newEndpoint->setAutoMode(autoControlled == "1");
                 newEndpoint->setConnected(connected == "1");
+                newEndpoint->setStateChangePending(stateChangePending == "1");
                 endpointsUpdate.append(newEndpoint);
             }
             else if (payloadParts.length() == 1){

@@ -23,7 +23,7 @@ Endpoint::Endpoint(QTcpSocket* socket, QString alias, QString type, QString MAC,
         connect(clientSocket, SIGNAL(disconnected()), this, SLOT(slotDisconnected()));
         this->connected = true;
     }
-    connect(this->pendingRequestNoUpdateTimer, SIGNAL(timeout()), this, SLOT(slotPendingRequestNoUpdateTimerTimeout()));
+   // connect(this->pendingRequestNoUpdateTimer, SIGNAL(timeout()), this, SLOT(slotPendingRequestNoUpdateTimerTimeout()));
     this->checkedWeekdays = {false, false, false, false, false, false, false};
 }
 
@@ -258,6 +258,15 @@ QString Endpoint::getMAC() {
 }
 bool Endpoint::getState() {
     return this->state;
+}
+
+void Endpoint::setStateChangePending(bool pending)
+{
+    this->stateChangeRequestPending = pending;
+}
+
+bool Endpoint::isStateChangePending() {
+    return this->stateChangeRequestPending;
 }
 
 void Endpoint::setAutoMode(bool state)

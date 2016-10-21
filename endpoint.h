@@ -30,6 +30,8 @@ public:
     QString getMAC();
     void setState(bool state);
     bool getState();
+    void setStateChangePending(bool pending);
+    bool isStateChangePending();
     Q_INVOKABLE void setAutoMode(bool state);
     bool isAutoOn();
     void sendMessage(QByteArray message);

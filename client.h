@@ -19,9 +19,11 @@ public slots:
     bool isConnected();
 private slots:
     void slotReceivedData();
+    void slotSocketError(QAbstractSocket::SocketError socketError);
     void slotDisplayError(QAbstractSocket::SocketError socketError);
     void slotSessionOpened();    
     void slotDisconnect();
+    void slotDisconnected();
     void slotCloseMsgBox();
 signals:
     void signalDisconnected();
@@ -38,6 +40,7 @@ private:
     quint16 blockSize;
     QNetworkSession* networkSession;
     QMessageBox msgBox;
+    QAbstractSocket::SocketError lastSocketError;
 };
 
 #endif // CLIENT_H

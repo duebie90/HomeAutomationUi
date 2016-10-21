@@ -21,8 +21,15 @@ public:
     bool navigate(QString screenName);
     AbstractScreenController* getControllerInstance(QString screenName);
     static MainScreenWidget* getInstance();
+    static bool initialize();
+private slots:
+    void slotQuit();
+
 public slots:
     void slotQmlLoaded();
+signals:
+    void signalResetServer();
+    void signalQuit();
 private:
     MainScreenWidget(QWidget *parent = 0);
     ~MainScreenWidget();

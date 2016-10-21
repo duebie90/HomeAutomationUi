@@ -10,7 +10,16 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("HomeAutomationUi");
     QCoreApplication::setOrganizationName("Fh-Kiel");
     Client* client = Client::getInstance();
+
+    //initialite DataTransmitter
+    DataTransmitter* transmitter = DataTransmitter::getInstance();
+    transmitter->setClient(client);
+
+    //ToDo: turn of former mainWindow
     MainWindow mainWindow(client);
+    //Qml-based MainScreen
+    MainScreenWidget::initialize();
+    MainScreenWidget* mainScreen = MainScreenWidget::getInstance();
 
     DataReceiver* dataReceiver = DataReceiver::getInstance();
 
@@ -33,9 +42,9 @@ int main(int argc, char *argv[])
     QObject::connect(dataReceiver, SIGNAL(signalReceivedEndpointSchedules(QList<ScheduleEvent*>,QString)),
                      &mainWindow, SLOT(slotReceivedEndpointSchedules(QList<ScheduleEvent*>,QString)));
     QObject::connect(&mainWindow, SIGNAL(signalQuit()), &a, SLOT(quit()));
+    QObject::connect(mainScreen, SIGNAL(signalQuit()), &a, SLOT(quit()));
 
-
-    mainWindow.show();
+    //mainWindow.show();
 
     return a.exec();
 }

@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QTime>
+#include <MainScreenWidget.h>
 
 Client* Client::_instance = NULL;
 
@@ -12,8 +13,9 @@ Client::Client()
 {
     this->tcpSocket = new QTcpSocket(this);
     connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(slotReceivedData()));
-    connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(slotDisplayError(QAbstractSocket::SocketError)));
+    connect(tcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(slotSocketError(QAbstractSocket::SocketError)));
     connect(tcpSocket, SIGNAL(disconnected()), this, SIGNAL(signalDisconnected()));
+    connect(tcpSocket, SIGNAL(disconnected()), this, SLOT(slotDisconnected()));
     connect(tcpSocket, SIGNAL(connected()), this, SIGNAL(signalConnected()));
     QNetworkConfigurationManager manager;
     QNetworkConfiguration defaultConfig = manager.defaultConfiguration();
@@ -49,10 +51,10 @@ void Client::slotDisplayError(QAbstractSocket::SocketError socketError) {
                                      .arg(tcpSocket->errorString()));
         };
         QTimer::singleShot(2000, this, SLOT(slotCloseMsgBox()) );
-        msgBox.show();
-        //msgBox.exec();
-        msgBox.setFocus();
-        emit signalConnectFailed(msgBox.text());
+//        msgBox.show();
+//        //msgBox.exec();
+//        msgBox.setFocus();
+        emit signalConnectFailed(msgBox.text());        
 }
 
 void Client::slotReceivedData() {
@@ -75,6 +77,13 @@ void Client::slotReceivedData() {
     emit signalReceivedData(received);
 }
 
+void Client::slotSocketError(QAbstractSocket::SocketError socketError)
+{
+    slotDisplayError(socketError);
+    //save error message for later
+    this->lastSocketError = socketError;
+}
+
 void Client::slotSessionOpened() {
     qDebug()<<__FUNCTION__;
 }
@@ -92,7 +101,13 @@ void Client::slotSend(QByteArray data) {
     tcpSocket->write(toSend);
 }
 void Client::slotDisconnect() {
-    this->tcpSocket->close();
+    this->tcpSocket->close();    
+}
+
+void Client::slotDisconnected()
+{
+    MainScreenWidget::getInstance()->navigate("StartScreen");
+    slotDisplayError(this->lastSocketError);
 }
 
 bool Client::isConnected() {

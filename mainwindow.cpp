@@ -18,12 +18,13 @@ MainWindow::MainWindow(Client* client, QWidget *parent) :
     //save a reference to Client-Object
     this->client = client;
     this->dataTransmitter = DataTransmitter::getInstance();
-    this->dataTransmitter->setClient(client);
+    //this->dataTransmitter->setClient(client);
 
     mainQmlScreen = MainScreenWidget::getInstance();
     mainQmlScreen->show();
     //mainQmlScreen->navigate("EndpointOverviewScreen");
     mainQmlScreen->navigate("StartScreen");
+    connect(mainQmlScreen, SIGNAL(signalResetServer()), this, SLOT(slotResetServer()));
 
     //UI connections
     connect(ui->buConnect, SIGNAL(clicked(bool)), this, SLOT(slotConnect(bool)));   
@@ -84,8 +85,7 @@ void MainWindow::slotDisconnected() {
     foreach(Endpoint* endpoint, this->mapMac2endpoints.values()) {
         endpoint->setConnected(false);
     }
-    updateMainScreen(this->mapMac2endpoints.values());
-    mainQmlScreen->navigate("StartScreen");
+    updateMainScreen(this->mapMac2endpoints.values());    
     this->firstUpdateSinceConnect = true;
 }
 
@@ -115,6 +115,7 @@ void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
                 endpoint2Update->setState( endpoint->getState());
                 endpoint2Update->setConnected( endpoint->isConnected());
                 endpoint2Update->setAutoMode(endpoint->isAutoOn());
+                endpoint2Update->setStateChangePending(endpoint->isStateChangePending());
             }
         }
         endpointsUpdateMacs.append(endpoint->getMAC());
@@ -181,6 +182,7 @@ void MainWindow::slotQuit() {
     //save current window settings
     this->close();
     emit signalQuit();
+    deleteLater();
 }
 
 void MainWindow::slotResetServer() {

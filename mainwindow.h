@@ -38,9 +38,11 @@ private slots:
 
     void slotSendEndpointScheduleUpdate(QString mac, ScheduleEvent* event);
 
-    void slotQuit();
-    void slotResetServer();
+    void slotQuit();    
     void slotResetUI();
+
+public slots:
+    void slotResetServer();
 
 signals:
     void signalConnect(QHostAddress host, quint16 port);

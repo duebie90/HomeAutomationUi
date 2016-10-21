@@ -15,6 +15,11 @@ MainScreenWidget::MainScreenWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     setFixedSize(800,621);
+
+    connect(ui->actionQuit, SIGNAL(triggered(bool)), this, SLOT(slotQuit()));
+    connect(ui->actionResetServer, SIGNAL(triggered(bool)), this, SIGNAL(signalResetServer()));
+    connect(ui->actionDisconnect, SIGNAL(triggered(bool)), Client::getInstance(), SLOT(slotDisconnect()));
+
     qmlWidget = this->ui->quickWidget;
     qmlWidget->rootContext()->setContextProperty("mainContentSource", "");
     qmlWidget->setSource(QUrl(QStringLiteral("qrc:/MainQmlScreen.qml")));
@@ -60,6 +65,22 @@ MainScreenWidget *MainScreenWidget::getInstance()
         _instance = new MainScreenWidget();
     }
     return _instance;
+}
+
+bool MainScreenWidget::initialize()
+{
+    getInstance();
+    //ToDo: return sensefull value
+    return true;
+}
+
+void MainScreenWidget::slotQuit()
+{
+    qDebug()<<__FUNCTION__;
+    //save current window settings
+    this->close();
+    emit signalQuit();
+    deleteLater();
 }
 
 void MainScreenWidget::slotQmlLoaded()
