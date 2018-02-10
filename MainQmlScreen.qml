@@ -10,6 +10,7 @@ Item {
     }
     Loader {
         id:mainContent
+        focus:true
         anchors.fill: parent
         source:mainContentSource
         onLoaded: signalQmlLoaded()

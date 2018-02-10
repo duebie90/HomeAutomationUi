@@ -20,7 +20,7 @@ class Endpoint: public QObject
 
 public:
     Endpoint(QTcpSocket* socket=NULL, QString alias="", QString type="", QString MAC="", QObject* parent=0);
-    void copyEndpoint(Endpoint* otherEndpoint);
+    virtual void copyEndpoint(Endpoint* otherEndpoint);
     void updateSocket(QTcpSocket* newSocket);
     QTcpSocket* getSocket();
     bool isConnected();
@@ -29,7 +29,7 @@ public:
     QString getType();
     QString getMAC();
     void setState(bool state);
-    bool getState();
+    virtual bool getState();
     void setStateChangePending(bool pending);
     bool isStateChangePending();
     Q_INVOKABLE void setAutoMode(bool state);

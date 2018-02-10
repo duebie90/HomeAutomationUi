@@ -6,6 +6,8 @@
 
 #include <datatransmitter.h>
 #include <EndpointOverviewScreen.h>
+#include <endpoint.h>
+#include <HeatingEndpoint.h>
 
 #define EW_MAX_COLS 4
 
@@ -47,6 +49,8 @@ MainWindow::MainWindow(Client* client, QWidget *parent) :
     //resize(settings.value("size", QSize(400, 400)).toSize());
     move(settings.value("pos", QPoint(200, 200)).toPoint());
     settings.endGroup();
+    QTcpSocket* socket;
+    this->heatingEndpointTest = new HeatingEndpoint(NULL, "Heizung", "HeatingEndpoint", "FFFE");
 
 }
 
@@ -91,6 +95,9 @@ void MainWindow::slotDisconnected() {
 
 //void MainWindow::slotReceivedData(QString message) {
 void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
+
+    //endpointsUpdate.append(this->heatingEndpointTest);
+
     QList<QString> endpointsUpdateMacs;
     bool endpointsListChanged = false;
     //if endpoint are already known: update 'em

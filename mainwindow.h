@@ -10,6 +10,7 @@
 #include <QStandardItemModel>
 #include <QTableView>
 #include <endpoint.h>
+#include <HeatingEndpoint.h>
 #include <client.h>
 #include <datatransmitter.h>
 #include <MainScreenWidget.h>
@@ -64,7 +65,9 @@ private:
     DataTransmitter* dataTransmitter;    
     MainScreenWidget* mainQmlScreen;
     bool firstUpdateSinceConnect;
-
+    // DEBUG ONLY
+    HeatingEndpoint* heatingEndpointTest;
+    //
 
 };
 
