@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     AbstractScreenController.cpp \
     ../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.cpp \
     StartScreenController.cpp \
-    HeatingEndpoint.cpp
+    HeatingEndpoint.cpp \
+    AbstractEndpoint.cpp
 
 HEADERS  += mainwindow.h \
     client.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     AbstractScreenController.h \
     ../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.h \
     StartScreenController.h \
-    HeatingEndpoint.h
+    HeatingEndpoint.h \
+    AbstractEndpoint.h
 
 FORMS    += mainwindow.ui \
     MainScreenWidget.ui

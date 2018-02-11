@@ -9,6 +9,9 @@
         <file>SideBarEndpointList.qml</file>
         <file>ScheduleDialog.qml</file>
         <file>StartScreen.qml</file>
+        <file>EndpointDelegateLoader.qml</file>
+        <file>HeatingEndpointWidget.qml</file>
+        <file>test.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/add-square.png</file>

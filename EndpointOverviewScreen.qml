@@ -18,13 +18,14 @@ Item {
    Repeater {
        id:endpointWidgetsList
        model: overviewScreen.endpoints
-       delegate: EndpointWidget {
+       delegate: EndpointDelegateLoader {
             endpoint: modelData
             height:root.height
             width:600
             defaultX: 200
             shown: selectedEndpointIndex === index
-            x: shown ? 200 : 200-width
+            x: shown ? 200 : 200-root.width
+            delegateSource: endpoint.qmlpath
         }
    }
    SideBarEndpointList {

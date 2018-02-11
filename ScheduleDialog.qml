@@ -283,12 +283,12 @@ Item{
         anchors.horizontalCenter: parent.horizontalCenter
         width: 200
         model: ["keine Wdh.", "täglich", "werktags", "Samstag & Sonntag", "wöchentlich"]
-        onCurrentIndexChanged:{ endpoint.scheduleIntervallChosen(currentIndex)
-            if(currentIndex != 4) {
-                resetWeekdays()
-            }
+        //onCurrentIndexChanged:{ endpoint.scheduleIntervallChosen(currentIndex)
+        //    if(currentIndex != 4) {
+        //        resetWeekdays()
+        //    }
 
-        }
+        //}
     }
     FrameButton {
         anchors.bottom: parent.bottom

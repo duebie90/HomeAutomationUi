@@ -118,7 +118,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: portLabel.right
             anchors.leftMargin: 10
-            text: "3000"
+            text: recentPort
             color: "black"
             selectByMouse: true
             validator: IntValidator{bottom:0; top:9999}

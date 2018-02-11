@@ -10,7 +10,7 @@ class HeatingEndpoint : public Endpoint
 {    
     Q_OBJECT
 public:
-    explicit HeatingEndpoint(QTcpSocket* socket=NULL, QString alias="", QString type="", QString MAC="", QObject* parent=0);
+    explicit HeatingEndpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
     //HeatingEndpoint();
     void copyEndpoint(Endpoint* otherEndpoint);
     void setAutoMode(bool state);
@@ -18,10 +18,15 @@ public:
 signals:
 
 public slots:
+
+protected:
+    //QString qmlpath;
+
 private:
     float boiler_temp;
     float target_vorlauf_temp;
     float vorlauf_temp;
+
 
 };
 

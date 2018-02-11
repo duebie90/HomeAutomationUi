@@ -7,6 +7,7 @@
 #include <datatransmitter.h>
 #include <EndpointOverviewScreen.h>
 #include <endpoint.h>
+#include <AbstractEndpoint.h>
 #include <HeatingEndpoint.h>
 
 #define EW_MAX_COLS 4
@@ -43,15 +44,17 @@ MainWindow::MainWindow(Client* client, QWidget *parent) :
     qDebug()<<ui->horizontalLayoutEndpointWidgets_lower->geometry();
     //restore previous window settings
 
-    QSettings settings(QDir::currentPath() + "/settings.ini",  QSettings::IniFormat);
+    //QSettings settings(QDir::currentPath() + "/settings.ini",  QSettings::IniFormat);
     //this->settings.setPath(QSettings::IniFormat, QSettings::UserScope, QApplication::applicationDirPath() );
-    settings.beginGroup("MainWindow");
+    //settings.beginGroup("MainWindow");
     //resize(settings.value("size", QSize(400, 400)).toSize());
-    move(settings.value("pos", QPoint(200, 200)).toPoint());
-    settings.endGroup();
+    //move(settings.value("pos", QPoint(200, 200)).toPoint());
+    //cout<<settings.value("pos", QPoint(200, 200)).toString().toStdString();
+    //settings.endGroup();
     QTcpSocket* socket;
-    this->heatingEndpointTest = new HeatingEndpoint(NULL, "Heizung", "HeatingEndpoint", "FFFE");
+    this->heatingEndpointTest = new HeatingEndpoint("Heizung", "HeatingEndpoint", "FFFE");
 
+    this->mapMac2endpoints.insert(this->heatingEndpointTest->getMAC(), this->heatingEndpointTest);
 }
 
 void MainWindow::slotConnect(bool) {
@@ -94,18 +97,18 @@ void MainWindow::slotDisconnected() {
 }
 
 //void MainWindow::slotReceivedData(QString message) {
-void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
+void MainWindow::slotReceivedEndpointList(QList<AbstractEndpoint*> endpointsUpdate) {
 
-    //endpointsUpdate.append(this->heatingEndpointTest);
+    endpointsUpdate.append(this->heatingEndpointTest);
 
     QList<QString> endpointsUpdateMacs;
     bool endpointsListChanged = false;
     //if endpoint are already known: update 'em
-    foreach(Endpoint* endpoint, endpointsUpdate) {
+    foreach(AbstractEndpoint* endpoint, endpointsUpdate) {
         if (!this->mapMac2endpoints.keys().contains(endpoint->getMAC())) {
             //create a new one as a copy of the "update Endpoint"
             Endpoint* newEndpoint = new Endpoint();
-            newEndpoint->copyEndpoint(endpoint);
+            newEndpoint->copyEndpoint(static_cast<Endpoint*>(endpoint));
             this->mapMac2endpoints.insert(endpoint->getMAC(), newEndpoint);
             connect(newEndpoint, SIGNAL(signalSendScheduleUpdate(QString,ScheduleEvent*)),
                     this, SLOT(slotSendEndpointScheduleUpdate(QString,ScheduleEvent*)));
@@ -118,11 +121,11 @@ void MainWindow::slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate) {
         else {
             Endpoint* endpoint2Update = this->mapMac2endpoints.value(endpoint->getMAC());
             if (endpoint2Update != NULL) {
-                //do the update stuff
-                endpoint2Update->setState( endpoint->getState());
+                //do the update stuff                
+                endpoint2Update->setState( static_cast<Endpoint*>(endpoint)->getState());
                 endpoint2Update->setConnected( endpoint->isConnected());
-                endpoint2Update->setAutoMode(endpoint->isAutoOn());
-                endpoint2Update->setStateChangePending(endpoint->isStateChangePending());
+                endpoint2Update->setAutoMode(static_cast<Endpoint*>(endpoint)->isAutoOn());
+                endpoint2Update->setStateChangePending(static_cast<Endpoint*>(endpoint)->isStateChangePending());
             }
         }
         endpointsUpdateMacs.append(endpoint->getMAC());
@@ -207,6 +210,11 @@ void MainWindow::slotResetUI() {
 
 MainWindow::~MainWindow()
 {
+    QSettings settings(QDir::currentPath() + "/settings.ini",  QSettings::IniFormat);
+    settings.beginGroup("MainWindow");
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.endGroup();
     delete ui;
 }
 

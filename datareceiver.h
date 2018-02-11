@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <endpoint.h>
+#include <AbstractEndpoint.h>
 #include <../HomeAutomationServer/HomeAutomation-Network/messagetype.h>
 
 
@@ -14,7 +15,7 @@ public:
 public slots:
     void slotReceivedData(QByteArray data);
 signals:
-    void signalReceivedEndpointList(QList<Endpoint*> endpointsUpdate);
+    void signalReceivedEndpointList(QList<AbstractEndpoint*> endpointsUpdate);
     void signalReceivedEndpointSchedules(QList<ScheduleEvent*> schedulesUpdate, QString MAC);
     //...
 private:

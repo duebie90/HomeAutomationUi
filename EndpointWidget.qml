@@ -3,23 +3,14 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls 2.0
 
 Item {
-    id:root
-    visible: shown
-    //onVisibleChanged: console.log("on visible changed EPW")
+    id:root        
     property int defaultX:200
     property variant endpoint: undefined
     property bool shown: false
     //if another slide was clicked before completed it is scheduled
     property bool hideScheduled: false
     property bool showScheduled: false
-    onShownChanged: {
-            if (shown) {
-                show()
-            }
-            else {
-                hide()
-            }
-    }
+
     property bool switchedState: (endpoint !== undefined ) ? endpoint.switchedState : false
     onSwitchedStateChanged:  {
         manSwitch.checked = switchedState
@@ -29,58 +20,13 @@ Item {
         autoSwitch.checked = autoControlled
     }
 
-    function show() {
-        if(hideAnimation.running) {
-            //wait until hidden completed, then show again
-            showScheduled = true
-        } else {
-            showAnimation.start()
-        }
-    }
-    function hide() {
-        if(showAnimation.running) {
-            //wait until show compled, then hide again
-            hideScheduled = true
-        } else {
-            hideAnimation.start()
-        }
+
+
+    function hideEditSchedulesScreen() {
+        editSchedulesScreen.hide()
     }
 
-    PropertyAnimation {
-        id:showAnimation
-        target: root
-        property: "x"
-        //from: defaultX - root.width
-        to:defaultX
-        duration:500
-        easing.type: Easing.InOutQuad
-        onStarted: root.visible = true
-        onStopped: {
-            if(hideScheduled) {
-                hideScheduled = false
-                hideAnimation.start()
-            }
-        }
-    }
-    PropertyAnimation {
-        id:hideAnimation
-        target: root
-        property: "x"
-        //from:defaultX
-        to: root.width + defaultX
-        duration:500
-        easing.type: Easing.InOutQuad
-        onStopped: {
-            x = defaultX - root.width
-            root.visible = false
-            editSchedulesScreen.hide()
-            if(showScheduled) {
-                showScheduled = false
-                showAnimation.start()
-            }
-        }
-    }
-    //onEndpointChanged: console.log("QmlEndpointWidget on endpoint changed")
+
     Rectangle {
         id:backgroundColor
         anchors.fill: parent

@@ -7,11 +7,12 @@
 #define UPDATE_BLOCK_INTERVALL 1000 //ms
 
 Endpoint::Endpoint(QTcpSocket* socket, QString alias, QString type, QString MAC, QObject* parent):
-    QObject(parent),
+    AbstractEndpoint(alias, type, MAC, parent),
     autoMode(false),
     chosenRepetitionType(ScheduleEvent::REPETITION_TYPE_WEEKLY),
     stateChangeRequestPending(false),
-    pendingRequestNoUpdateTimer(new QTimer())
+    pendingRequestNoUpdateTimer(new QTimer()),
+    qmlpath("EndpointWidget.qml")
 {
     this->clientSocket = socket;
     this->alias = alias;
@@ -285,4 +286,12 @@ void Endpoint::setState(bool state) {
         this->state = state;
         emit signalUpdateEndpoint();
     }
+}
+
+QString Endpoint::getQmlPath() {
+    return this->qmlpath;
+}
+
+void Endpoint::setQmlPath(QString qmlPath) {
+    this->qmlpath = qmlPath;
 }

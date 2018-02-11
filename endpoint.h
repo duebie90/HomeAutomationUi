@@ -3,16 +3,18 @@
 
 #include <QObject>
 #include <QtNetwork>
+#include <AbstractEndpoint.h>
 #include <iostream>
 #include <../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.h>
 using namespace std;
 
-class Endpoint: public QObject
+class Endpoint: public AbstractEndpoint
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ getAlias NOTIFY signalUpdateEndpoint)
     Q_PROPERTY(QString mac READ getMAC NOTIFY signalUpdateEndpoint)
     Q_PROPERTY(QString type READ getType NOTIFY signalUpdateEndpoint)
+    Q_PROPERTY(QString qmlpath READ getQmlPath CONSTANT)
     Q_PROPERTY(bool switchedState READ getState NOTIFY signalUpdateEndpoint)
     Q_PROPERTY(bool connected READ isConnected NOTIFY signalUpdateEndpoint)
     Q_PROPERTY(bool autoMode READ isAutoOn NOTIFY signalAutoModeChanged)
@@ -53,6 +55,8 @@ public:
     Q_INVOKABLE void saveNewSchedule(QString startTime, QString endTime);
     Q_INVOKABLE void saveScheduleChanges(ScheduleEvent* event, QString startTime, QString endTime, int repetitionType);
     Q_INVOKABLE void scheduleIntervallChosen(int index);
+    QString getQmlPath();
+    void setQmlPath(QString);
 
 signals:
     void signalUpdateEndpoint();
@@ -65,6 +69,8 @@ private slots:
     void slotReceivedData();
     void slotDisconnected();
     void slotPendingRequestNoUpdateTimerTimeout();
+protected:
+    QString qmlpath;
 private:
     void receivedData();
     QString alias;
@@ -79,7 +85,7 @@ private:
     QList<bool> checkedWeekdays;
     ScheduleEvent::RepetitionType chosenRepetitionType;
     QTimer* pendingRequestNoUpdateTimer;
-     bool stateChangeRequestPending;
+     bool stateChangeRequestPending;    
 
 };
 

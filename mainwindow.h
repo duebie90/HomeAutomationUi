@@ -33,7 +33,7 @@ private slots:
     void slotConnected();
     void slotDisconnected();
     //void slotReceivedData(QString message);
-    void slotReceivedEndpointList(QList<Endpoint*> endpointsUpdate);
+    void slotReceivedEndpointList(QList<AbstractEndpoint*> endpointsUpdate);
     void slotReceivedEndpointSchedules(QList<ScheduleEvent*> schedulesList, QString MAC);
     void slotRequestStateChange(QString MAC, bool state);
 

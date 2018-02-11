@@ -78,7 +78,7 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
 
 void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     QString alias, MAC, endpointType, state, connected, autoControlled, stateChangePending;
-    QList<Endpoint*> endpointsUpdate;
+    QList<AbstractEndpoint*> endpointsUpdate;
     //0x1F = unit separator
     QList<QByteArray> payloadParts = payload.split(0x1F);
 
@@ -105,7 +105,8 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
                 newEndpoint->setAutoMode(autoControlled == "1");
                 newEndpoint->setConnected(connected == "1");
                 newEndpoint->setStateChangePending(stateChangePending == "1");
-                endpointsUpdate.append(newEndpoint);
+
+                endpointsUpdate.append(static_cast<AbstractEndpoint*>(newEndpoint));
             }
             else if (payloadParts.length() == 1){
                 //Empty list of endpoint states
