@@ -54,7 +54,7 @@ MainWindow::MainWindow(Client* client, QWidget *parent) :
     QTcpSocket* socket;
     this->heatingEndpointTest = new HeatingEndpoint("Heizung", "HeatingEndpoint", "FFFE");
 
-    this->mapMac2endpoints.insert(this->heatingEndpointTest->getMAC(), this->heatingEndpointTest);
+    //this->mapMac2endpoints.insert(this->heatingEndpointTest->getMAC(), this->heatingEndpointTest);
 }
 
 void MainWindow::slotConnect(bool) {
@@ -99,7 +99,7 @@ void MainWindow::slotDisconnected() {
 //void MainWindow::slotReceivedData(QString message) {
 void MainWindow::slotReceivedEndpointList(QList<AbstractEndpoint*> endpointsUpdate) {
 
-    endpointsUpdate.append(this->heatingEndpointTest);
+    //endpointsUpdate.append(this->heatingEndpointTest);
 
     QList<QString> endpointsUpdateMacs;
     bool endpointsListChanged = false;

@@ -100,7 +100,7 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
                 stateChangePending = payloadParts.at(i + 6);
                 //ToDo turn into stack-variable
 
-                Endpoint* newEndpoint = new Endpoint(NULL, alias, endpointType, MAC);
+                Endpoint* newEndpoint = new Endpoint(alias, endpointType, MAC);
                 newEndpoint->setState(state == "1");
                 newEndpoint->setAutoMode(autoControlled == "1");
                 newEndpoint->setConnected(connected == "1");

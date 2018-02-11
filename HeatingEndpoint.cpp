@@ -2,13 +2,20 @@
 
 HeatingEndpoint::HeatingEndpoint(QString alias, QString type, QString MAC,
                                  QObject* parent):
-    Endpoint(NULL, alias, type, MAC, parent)
+    AbstractEndpoint(alias, type, MAC, parent)
 {
     this->boiler_temp = 5;
     setQmlPath("HeatingEndpointWidget.qml");
 }
 
-void HeatingEndpoint::copyEndpoint(Endpoint* otherEndpoint){
+//HeatingEndpoint::HeatingEndpoint(QObject* parent):
+//HeatingEndpoint::HeatingEndpoint(int a)
+//Endpoint(NULL, "","","", parent)
+//{
+
+//}
+
+void HeatingEndpoint::copyEndpoint(HeatingEndpoint* otherEndpoint){
     //Endpoint::copyEndpoint(otherEndpoint);
 
 }

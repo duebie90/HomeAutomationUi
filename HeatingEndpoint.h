@@ -2,17 +2,18 @@
 #define HEATINGENDPOINT_H
 
 #include <QObject>
-#include "endpoint.h"
+#include <AbstractEndpoint.h>
 
 using namespace std;
 
-class HeatingEndpoint : public Endpoint
+class HeatingEndpoint : public AbstractEndpoint
 {    
     Q_OBJECT
 public:
-    explicit HeatingEndpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
+    HeatingEndpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
+    //HeatingEndpoint(int);
     //HeatingEndpoint();
-    void copyEndpoint(Endpoint* otherEndpoint);
+    void copyEndpoint(HeatingEndpoint* otherEndpoint);
     void setAutoMode(bool state);
     bool getState();
 signals:

@@ -17,6 +17,10 @@ QString AbstractScreenController::getQmlPath()
     return qmlPath;
 }
 
+void AbstractScreenController::setQmlPath(QString qmlPath){
+    this->qmlPath = qmlPath;
+}
+
 QString AbstractScreenController::getScreenName()
 {
     return this->screenName;

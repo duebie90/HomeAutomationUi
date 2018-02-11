@@ -21,10 +21,8 @@ class Endpoint: public AbstractEndpoint
     Q_PROPERTY(QVariant schedules READ getSchedulesObjectList NOTIFY signalSchedulesChanged)
 
 public:
-    Endpoint(QTcpSocket* socket=NULL, QString alias="", QString type="", QString MAC="", QObject* parent=0);
-    virtual void copyEndpoint(Endpoint* otherEndpoint);
-    void updateSocket(QTcpSocket* newSocket);
-    QTcpSocket* getSocket();
+    Endpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
+    virtual void copyEndpoint(Endpoint* otherEndpoint);        
     bool isConnected();
     void setConnected(bool connected);
     QString getAlias();
@@ -35,8 +33,7 @@ public:
     void setStateChangePending(bool pending);
     bool isStateChangePending();
     Q_INVOKABLE void setAutoMode(bool state);
-    bool isAutoOn();
-    void sendMessage(QByteArray message);
+    bool isAutoOn();    
     QMap<int, ScheduleEvent*> getScheduledEvents();
     QVariant getSchedulesObjectList();
     void updateSchedules(QList<ScheduleEvent*> schedules);
@@ -65,18 +62,14 @@ signals:
     void signalSchedulesChanged();
     void signalSendScheduleUpdate(QString mac, ScheduleEvent* event);
     void signalRemovedByUser();
-private slots:
-    void slotReceivedData();
-    void slotDisconnected();
+private slots:    
     void slotPendingRequestNoUpdateTimerTimeout();
 protected:
     QString qmlpath;
 private:
-    void receivedData();
     QString alias;
     QString type;
-    QString MAC;
-    QTcpSocket* clientSocket;
+    QString MAC;    
     bool state;
     bool connected;
     bool autoMode;    

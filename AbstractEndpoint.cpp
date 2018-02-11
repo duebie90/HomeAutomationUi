@@ -1,10 +1,14 @@
 #include "AbstractEndpoint.h"
 
 AbstractEndpoint::AbstractEndpoint(QString alias, QString type, QString MAC, QObject* parent)
-    : QObject(parent)
+    : AbstractScreenController(parent)
 {    
     this->alias = alias;
     this->MAC = MAC;
+
+}
+AbstractEndpoint::AbstractEndpoint()
+{
 
 }
 

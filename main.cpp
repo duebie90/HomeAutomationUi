@@ -3,9 +3,15 @@
 #include <datareceiver.h>
 #include <MainScreenWidget.h>
 #include <client.h>
+#include <EndpointFactory.h>
 
 int main(int argc, char *argv[])
 {
+    //DEBUGGING
+    EndpointFactory factory;
+    AbstractEndpoint* testEndpoint = factory.createEndpoint(EndpointFactory::HeatingEndpointType);
+    std::cout<<testEndpoint->getAlias().toStdString();
+
     QApplication a(argc, argv);
     QCoreApplication::setApplicationName("HomeAutomationUi");
     QCoreApplication::setOrganizationName("Fh-Kiel");

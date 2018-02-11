@@ -6,46 +6,29 @@
 
 #define UPDATE_BLOCK_INTERVALL 1000 //ms
 
-Endpoint::Endpoint(QTcpSocket* socket, QString alias, QString type, QString MAC, QObject* parent):
+Endpoint::Endpoint(QString alias, QString type, QString MAC, QObject* parent):
     AbstractEndpoint(alias, type, MAC, parent),
     autoMode(false),
     chosenRepetitionType(ScheduleEvent::REPETITION_TYPE_WEEKLY),
     stateChangeRequestPending(false),
     pendingRequestNoUpdateTimer(new QTimer()),
     qmlpath("EndpointWidget.qml")
-{
-    this->clientSocket = socket;
+{    
     this->alias = alias;
     this->type = type;
     this->MAC = MAC;
     this->state = false;
-    if(socket != NULL) {
-        connect(clientSocket, SIGNAL(readyRead()), this, SLOT(slotReceivedData()));
-        connect(clientSocket, SIGNAL(disconnected()), this, SLOT(slotDisconnected()));
-        this->connected = true;
-    }
+
    // connect(this->pendingRequestNoUpdateTimer, SIGNAL(timeout()), this, SLOT(slotPendingRequestNoUpdateTimerTimeout()));
     this->checkedWeekdays = {false, false, false, false, false, false, false};
 }
 
 void Endpoint::copyEndpoint(Endpoint *otherEndpoint)
 {
-    this->clientSocket = otherEndpoint->getSocket();
     this->alias = otherEndpoint->getAlias();
     this->type = otherEndpoint->getType();
     this->MAC = otherEndpoint->getMAC();
     this->state = otherEndpoint->getState();
-}
-
-void Endpoint::slotReceivedData() {
-    QByteArray data = this->clientSocket->readAll();
-    QString message = QString(data);
-    QHostAddress remoteAddress = clientSocket->peerAddress();    
-    cout<<"Alias: "<<alias.toStdString()<<" IP:"<<remoteAddress.toString().toStdString()<<" data:"<<message.toStdString()<<"\n";
-}
-
-void Endpoint::sendMessage(QByteArray message){
-    this->clientSocket->write(message, message.length());
 }
 
 QMap<int, ScheduleEvent*> Endpoint::getScheduledEvents()
@@ -220,24 +203,9 @@ void Endpoint::scheduleIntervallChosen(int index)
 }
 
 
-void Endpoint::slotDisconnected() {
-    this->connected = false;
-}
-
 void Endpoint::slotPendingRequestNoUpdateTimerTimeout()
 {
     this->stateChangeRequestPending = false;
-}
-
-void Endpoint::updateSocket(QTcpSocket* newSocket) {
-    this->clientSocket = newSocket;
-    this->connected = true;
-    emit signalUpdateEndpoint();
-}
-
-QTcpSocket *Endpoint::getSocket()
-{
-    return this->clientSocket;
 }
 
 bool Endpoint:: isConnected() {

@@ -13,6 +13,7 @@ class AbstractScreenController : public QObject
 public:
     explicit AbstractScreenController(QObject *parent = 0);
     virtual QString getQmlPath();
+    void setQmlPath(QString);
     virtual QString getScreenName();
     void setQmlContext(QQmlContext* rootContext);
     QQmlContext* getRootContext();
