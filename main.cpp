@@ -3,15 +3,9 @@
 #include <datareceiver.h>
 #include <MainScreenWidget.h>
 #include <client.h>
-#include <EndpointFactory.h>
 
 int main(int argc, char *argv[])
 {
-    //DEBUGGING
-    EndpointFactory factory;
-    AbstractEndpoint* testEndpoint = factory.createEndpoint(EndpointFactory::HeatingEndpointType);
-    std::cout<<testEndpoint->getAlias().toStdString();
-
     QApplication a(argc, argv);
     QCoreApplication::setApplicationName("HomeAutomationUi");
     QCoreApplication::setOrganizationName("Fh-Kiel");
@@ -45,6 +39,11 @@ int main(int argc, char *argv[])
     //connections from DataReceiver to MainWindow
     QObject::connect(dataReceiver, SIGNAL(signalReceivedEndpointList(QList<AbstractEndpoint*>)),
                      &mainWindow, SLOT(slotReceivedEndpointList(QList<AbstractEndpoint*>)));
+
+    QObject::connect(dataReceiver, SIGNAL(signalReceivedEndpointInfos(QString,QString,QString)),
+                     &mainWindow, SLOT(slotReceivedEndpointInfos(QString,QString,QString)));
+
+
     QObject::connect(dataReceiver, SIGNAL(signalReceivedEndpointSchedules(QList<ScheduleEvent*>,QString)),
                      &mainWindow, SLOT(slotReceivedEndpointSchedules(QList<ScheduleEvent*>,QString)));
     QObject::connect(&mainWindow, SIGNAL(signalQuit()), &a, SLOT(quit()));

@@ -50,13 +50,13 @@ void EndpointOverviewScreen::saveNewSchedule(QString startTime, QString endTime)
 QVariant EndpointOverviewScreen::getEndpoints()
 {
     QList<QObject*> endpointsObjectList;
-    foreach(Endpoint* endpoint, this->endpoints) {
+    foreach(AbstractEndpoint* endpoint, this->endpoints) {
         endpointsObjectList.append((QObject*)endpoint);
     }
     return QVariant::fromValue(endpointsObjectList);
 }
 
-void EndpointOverviewScreen::setEndpoints(QList<Endpoint *> endpoints)
+void EndpointOverviewScreen::setEndpoints(QList<AbstractEndpoint *> endpoints)
 {
     if(this->endpoints.empty()) {
         justInitialized = true;
@@ -85,7 +85,10 @@ void EndpointOverviewScreen::slotShownEndpointChanged(int index)
 {
     //QStringList endpointSchedulesStringList;
     QList<QObject*> endpointsSchedulesObjectList;
-    QList<ScheduleEvent*> schedules = this->endpoints.at(index)->getScheduledEvents().values();
+    QList<ScheduleEvent*> schedules;
+    if(this->endpoints.at(index)->getType() != "HeatingEndpoint"){
+        schedules = static_cast<Endpoint*>(this->endpoints.at(index))->getScheduledEvents().values();
+    }
     foreach(ScheduleEvent* event, schedules) {
         //endpointSchedulesStringList.append(event->toString());
         endpointsSchedulesObjectList.append( (QObject*)event);

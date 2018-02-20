@@ -4,6 +4,7 @@ AbstractEndpoint::AbstractEndpoint(QString alias, QString type, QString MAC, QOb
     : AbstractScreenController(parent)
 {    
     this->alias = alias;
+    this->type = type;
     this->MAC = MAC;
 
 }
@@ -16,12 +17,13 @@ void AbstractEndpoint::copyEndpoint(AbstractEndpoint* otherEndpoint){
 
 }
 
-bool AbstractEndpoint::isConnected(){
-    return false;
+bool AbstractEndpoint:: isConnected(){
+    return this->connected;
 }
 
 void AbstractEndpoint::setConnected(bool connected){
-
+    this->connected = connected;
+    emit signalUpdateEndpoint();
 }
 
 QString AbstractEndpoint::getAlias(){
@@ -35,6 +37,15 @@ QString AbstractEndpoint::getMAC(){
 QString AbstractEndpoint::getType(){
     return "";
 }
+
+void AbstractEndpoint::setState(bool state){
+    this->state = state;
+}
+
+bool AbstractEndpoint::getState(){
+    return this->state;
+}
+
 
 
 

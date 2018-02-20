@@ -15,7 +15,7 @@ public:
     virtual QString getScreenName();
     virtual void setQmlContextProperties(QQmlContext* rootContext);
     virtual void setQmlConnections(QQuickItem* rootObject);
-    void setEndpoints(QList<Endpoint*> endpoints);
+    void setEndpoints(QList<AbstractEndpoint*> endpoints);
     int getShownEndpointIndex();
     Q_INVOKABLE void weekdayChecked(int weekday);
     Q_INVOKABLE void saveNewSchedule(QString startTime, QString endTime);
@@ -27,7 +27,7 @@ public slots:
 private:
     QString qmlPath;
     QString screenName;
-    QList<Endpoint*> endpoints;
+    QList<AbstractEndpoint*> endpoints;
     int shownEndpointIndex;
     //temporary storage for new schedules
     QList<bool> checkedWeekdays;

@@ -89,6 +89,7 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     }
         break;
     case MESSAGETYPE_ENDPOINTS_STATES_LIST:
+        // This message sends infos about the states of all SwitchboxEndpoints
         for(int i= 0; i< (payloadParts.length()) ; i+=7) {
             if(payloadParts.length() >= i+6) {
                 alias   =   payloadParts.at(i + 0);
@@ -100,13 +101,14 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
                 stateChangePending = payloadParts.at(i + 6);
                 //ToDo turn into stack-variable
 
+                //emit signalReceivedEndpointInfos(alias, endpointType, MAC);
+
                 Endpoint* newEndpoint = new Endpoint(alias, endpointType, MAC);
                 newEndpoint->setState(state == "1");
                 newEndpoint->setAutoMode(autoControlled == "1");
                 newEndpoint->setConnected(connected == "1");
                 newEndpoint->setStateChangePending(stateChangePending == "1");
-
-                endpointsUpdate.append(static_cast<AbstractEndpoint*>(newEndpoint));
+                endpointsUpdate.append(newEndpoint);
             }
             else if (payloadParts.length() == 1){
                 //Empty list of endpoint states

@@ -27,7 +27,6 @@ SOURCES += main.cpp\
     StartScreenController.cpp \
     HeatingEndpoint.cpp \
     AbstractEndpoint.cpp \
-    EndpointFactory.cpp \
     SwitchboxEndpoint.cpp
 
 HEADERS  += mainwindow.h \
@@ -44,7 +43,6 @@ HEADERS  += mainwindow.h \
     StartScreenController.h \
     HeatingEndpoint.h \
     AbstractEndpoint.h \
-    EndpointFactory.h \
     SwitchboxEndpoint.h
 
 FORMS    += mainwindow.ui \

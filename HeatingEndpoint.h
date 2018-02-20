@@ -9,6 +9,8 @@ using namespace std;
 class HeatingEndpoint : public AbstractEndpoint
 {    
     Q_OBJECT
+    //Q_PROPERTY(bool connected READ isConnected NOTIFY signalUpdateEndpoint)
+
 public:
     HeatingEndpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
     //HeatingEndpoint(int);

@@ -22,14 +22,14 @@ class Endpoint: public AbstractEndpoint
 
 public:
     Endpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
-    virtual void copyEndpoint(Endpoint* otherEndpoint);        
+    virtual void copyEndpoint(Endpoint* otherEndpoint);
     bool isConnected();
     void setConnected(bool connected);
     QString getAlias();
     QString getType();
     QString getMAC();
     void setState(bool state);
-    virtual bool getState();
+    bool getState();
     void setStateChangePending(bool pending);
     bool isStateChangePending();
     Q_INVOKABLE void setAutoMode(bool state);

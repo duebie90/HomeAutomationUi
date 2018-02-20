@@ -27,13 +27,14 @@ protected:
 public:
     explicit MainWindow(Client* client, QWidget *parent = 0);
     ~MainWindow();
-    QMap<QString, Endpoint*> getEndpointsMap();
+    QMap<QString, AbstractEndpoint*> getEndpointsMap();
 private slots:
     void slotConnect(bool);
     void slotConnected();
     void slotDisconnected();
     //void slotReceivedData(QString message);
     void slotReceivedEndpointList(QList<AbstractEndpoint*> endpointsUpdate);
+    void slotReceivedEndpointInfos(QString,QString,QString);
     void slotReceivedEndpointSchedules(QList<ScheduleEvent*> schedulesList, QString MAC);
     void slotRequestStateChange(QString MAC, bool state);
 
@@ -55,18 +56,18 @@ private:
     //ToDo: move to an appropriate Class
     void parseBasicEndpointInfo(QString message);
     void addEndpoint(QString alias, QString type, QString MAC);
-    void updateMainScreen(QList<Endpoint*> endpointsUpdate);
+    void updateMainScreen(QList<AbstractEndpoint*> endpointsUpdate);
 
     Ui::MainWindow *ui;
     Client* client;
     QStandardItemModel* tableDataModel;
     QTableView* endpointsTable;
-    QMap<QString, Endpoint*> mapMac2endpoints;    
+    QMap<QString, AbstractEndpoint*> mapMac2endpoints;
     DataTransmitter* dataTransmitter;    
     MainScreenWidget* mainQmlScreen;
     bool firstUpdateSinceConnect;
     // DEBUG ONLY
-    HeatingEndpoint* heatingEndpointTest;
+    AbstractEndpoint* heatingEndpointTest;
     //
 
 };

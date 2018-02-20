@@ -6,11 +6,6 @@ Item {
     id:root
     width:600
     property variant endpoint: undefined
-    function hideEditSchedulesScreen() {
-        editSchedulesScreen.hide()
-    }
-
-
     Rectangle {
         id:backgroundColor
         anchors.fill: parent

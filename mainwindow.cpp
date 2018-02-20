@@ -50,11 +50,12 @@ MainWindow::MainWindow(Client* client, QWidget *parent) :
     //resize(settings.value("size", QSize(400, 400)).toSize());
     //move(settings.value("pos", QPoint(200, 200)).toPoint());
     //cout<<settings.value("pos", QPoint(200, 200)).toString().toStdString();
-    //settings.endGroup();
-    QTcpSocket* socket;
-    this->heatingEndpointTest = new HeatingEndpoint("Heizung", "HeatingEndpoint", "FFFE");
+    //settings.endGroup();    
 
-    //this->mapMac2endpoints.insert(this->heatingEndpointTest->getMAC(), this->heatingEndpointTest);
+    HeatingEndpoint* temp = new HeatingEndpoint("Heizung", "HeatingEndpoint", "FFFE");
+    this->heatingEndpointTest = temp;
+
+    this->mapMac2endpoints.insert(this->heatingEndpointTest->getMAC(), this->heatingEndpointTest);
 }
 
 void MainWindow::slotConnect(bool) {
@@ -89,7 +90,7 @@ void MainWindow::slotConnected() {
 void MainWindow::slotDisconnected() {
     this->ui->buConnect->setText("verbinden");
     this->ui->buConnect->setStyleSheet("");
-    foreach(Endpoint* endpoint, this->mapMac2endpoints.values()) {
+    foreach(AbstractEndpoint* endpoint, this->mapMac2endpoints.values()) {
         endpoint->setConnected(false);
     }
     updateMainScreen(this->mapMac2endpoints.values());    
@@ -97,18 +98,35 @@ void MainWindow::slotDisconnected() {
 }
 
 //void MainWindow::slotReceivedData(QString message) {
+void MainWindow::slotReceivedEndpointInfos(QString alias,QString type,QString mac){
+//if (!this->mapMac2endpoints.keys().contains(mac)) {
+//    AbstractEndpoint* endpoint = EndpointFactory::createEndpoint(AbstractEndpoint::SwitchboxEndpointType, alias, type, mac);
+
+//}else{
+//    //ToDo update the existing endpoint using static_cast ??
+//    ;
+//}
+}
+
+
+
 void MainWindow::slotReceivedEndpointList(QList<AbstractEndpoint*> endpointsUpdate) {
 
-    //endpointsUpdate.append(this->heatingEndpointTest);
+    endpointsUpdate.append(this->heatingEndpointTest);
 
     QList<QString> endpointsUpdateMacs;
     bool endpointsListChanged = false;
     //if endpoint are already known: update 'em
-    foreach(AbstractEndpoint* endpoint, endpointsUpdate) {
+
+    foreach(AbstractEndpoint* endpoint, endpointsUpdate) {        
         if (!this->mapMac2endpoints.keys().contains(endpoint->getMAC())) {
             //create a new one as a copy of the "update Endpoint"
-            Endpoint* newEndpoint = new Endpoint();
-            newEndpoint->copyEndpoint(static_cast<Endpoint*>(endpoint));
+            Endpoint* newEndpoint = new Endpoint(endpoint->getAlias(), endpoint->getType(), endpoint->getMAC());
+            newEndpoint->setState(endpoint->getState());
+            newEndpoint->setConnected( endpoint->isConnected());
+            newEndpoint->setAutoMode(static_cast<Endpoint*>(endpoint)->isAutoOn());
+            newEndpoint->setStateChangePending(static_cast<Endpoint*>(endpoint)->isStateChangePending());
+
             this->mapMac2endpoints.insert(endpoint->getMAC(), newEndpoint);
             connect(newEndpoint, SIGNAL(signalSendScheduleUpdate(QString,ScheduleEvent*)),
                     this, SLOT(slotSendEndpointScheduleUpdate(QString,ScheduleEvent*)));
@@ -119,7 +137,7 @@ void MainWindow::slotReceivedEndpointList(QList<AbstractEndpoint*> endpointsUpda
             endpointsListChanged = true;
         }
         else {
-            Endpoint* endpoint2Update = this->mapMac2endpoints.value(endpoint->getMAC());
+            Endpoint* endpoint2Update = static_cast<Endpoint*>(this->mapMac2endpoints.value(endpoint->getMAC()));
             if (endpoint2Update != NULL) {
                 //do the update stuff                
                 endpoint2Update->setState( static_cast<Endpoint*>(endpoint)->getState());
@@ -153,7 +171,7 @@ void MainWindow::slotReceivedEndpointList(QList<AbstractEndpoint*> endpointsUpda
 void MainWindow::slotReceivedEndpointSchedules(QList<ScheduleEvent *> schedulesList, QString MAC)
 {
      if (this->mapMac2endpoints.keys().contains(MAC)) {
-         Endpoint* endpoint = this->mapMac2endpoints.value(MAC);
+         Endpoint* endpoint = static_cast<Endpoint*>(this->mapMac2endpoints.value(MAC));
          if(endpoint != NULL)
             endpoint->updateSchedules(schedulesList);
      }
@@ -162,7 +180,7 @@ void MainWindow::slotReceivedEndpointSchedules(QList<ScheduleEvent *> schedulesL
 void MainWindow::parseBasicEndpointInfo(QString message) {
 }
 
-void MainWindow::updateMainScreen(QList<Endpoint *> endpointsUpdate)
+void MainWindow::updateMainScreen(QList<AbstractEndpoint *> endpointsUpdate)
 {
     EndpointOverviewScreen* endpointOverview = (EndpointOverviewScreen*)this->mainQmlScreen->getControllerInstance("EndpointOverviewScreen");
     endpointOverview->setEndpoints(this->mapMac2endpoints.values());    
@@ -198,13 +216,13 @@ void MainWindow::slotQuit() {
 void MainWindow::slotResetServer() {
     this->dataTransmitter->sendServerResetRequest();
     this->mapMac2endpoints.clear();
-    QList<Endpoint*> emptyList;
+    QList<AbstractEndpoint*> emptyList;
     updateMainScreen(emptyList);    
 }
 
 void MainWindow::slotResetUI() {
     this->mapMac2endpoints.clear();
-    QList<Endpoint*> emptyList;
+    QList<AbstractEndpoint*> emptyList;
     updateMainScreen(emptyList);
 }
 
@@ -218,7 +236,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QMap<QString, Endpoint *> MainWindow::getEndpointsMap()
+QMap<QString, AbstractEndpoint *> MainWindow::getEndpointsMap()
 {
     return this->mapMac2endpoints;
 }
