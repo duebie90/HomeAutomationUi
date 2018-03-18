@@ -23,11 +23,11 @@ public:
     AbstractEndpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
     AbstractEndpoint();
     void copyEndpoint(AbstractEndpoint* otherEndpoint);
-    bool isConnected();
-    void setConnected(bool connected);
+    virtual bool isConnected();
+    virtual void setConnected(bool connected);
     QString getAlias();
     QString getMAC();
-    QString getType();
+    virtual QString getType();
     virtual bool getState();
     virtual void setState(bool);
 

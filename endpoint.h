@@ -77,8 +77,9 @@ private:
     //temporary storage for new schedules
     QList<bool> checkedWeekdays;
     ScheduleEvent::RepetitionType chosenRepetitionType;
-    QTimer* pendingRequestNoUpdateTimer;
+    QTimer* pendingRequestTimeoutTimer;
      bool stateChangeRequestPending;    
+     bool requestedState;
 
 };
 

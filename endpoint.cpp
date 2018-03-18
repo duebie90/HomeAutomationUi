@@ -4,14 +4,14 @@
 #include <MainScreenWidget.h>
 #include <QDataStream>
 
-#define UPDATE_BLOCK_INTERVALL 1000 //ms
+#define WAITING_UPDATE_TIMEOUT 1000 //ms
 
 Endpoint::Endpoint(QString alias, QString type, QString MAC, QObject* parent):
     AbstractEndpoint(alias, type, MAC, parent),
     autoMode(false),
     chosenRepetitionType(ScheduleEvent::REPETITION_TYPE_WEEKLY),
     stateChangeRequestPending(false),
-    pendingRequestNoUpdateTimer(new QTimer()),
+    pendingRequestTimeoutTimer(new QTimer()),
     qmlpath("EndpointWidget.qml")
 {    
     this->alias = alias;
@@ -19,7 +19,7 @@ Endpoint::Endpoint(QString alias, QString type, QString MAC, QObject* parent):
     this->MAC = MAC;
     this->state = false;
 
-   // connect(this->pendingRequestNoUpdateTimer, SIGNAL(timeout()), this, SLOT(slotPendingRequestNoUpdateTimerTimeout()));
+    connect(this->pendingRequestTimeoutTimer, SIGNAL(timeout()), this, SLOT(slotPendingRequestNoUpdateTimerTimeout()));
     this->checkedWeekdays = {false, false, false, false, false, false, false};
 }
 
@@ -123,9 +123,10 @@ void Endpoint::requestStateChange(bool state)
         emit signalUpdateEndpoint();        
         DataTransmitter::getInstance()->sendStateRequestDigital(getMAC(), state);
         this->stateChangeRequestPending = true;
-        this->pendingRequestNoUpdateTimer->setInterval(UPDATE_BLOCK_INTERVALL);
-        this->pendingRequestNoUpdateTimer->setSingleShot(true);
-        this->pendingRequestNoUpdateTimer->start();
+        this->requestedState = state;
+        this->pendingRequestTimeoutTimer->setInterval(WAITING_UPDATE_TIMEOUT);
+        this->pendingRequestTimeoutTimer->setSingleShot(true);
+        this->pendingRequestTimeoutTimer->start();
     }
 }
 
@@ -206,6 +207,8 @@ void Endpoint::scheduleIntervallChosen(int index)
 void Endpoint::slotPendingRequestNoUpdateTimerTimeout()
 {
     this->stateChangeRequestPending = false;
+    // Reset Switch state to the state before request by use
+    this->setState(!this->requestedState);
 }
 
 bool Endpoint:: isConnected() {
