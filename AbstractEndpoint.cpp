@@ -35,7 +35,7 @@ QString AbstractEndpoint::getMAC(){
 }
 
 QString AbstractEndpoint::getType(){
-    return "";
+    return this->type;
 }
 
 void AbstractEndpoint::setState(bool state){
@@ -45,7 +45,4 @@ void AbstractEndpoint::setState(bool state){
 bool AbstractEndpoint::getState(){
     return this->state;
 }
-
-
-
 
