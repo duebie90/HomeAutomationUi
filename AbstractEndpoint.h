@@ -31,6 +31,26 @@ public:
     virtual bool getState();
     virtual void setState(bool);
 
+    //friend QDataStream &ScheduleEvent::operator<<(QDataStream &ds, AbstractEndpoint *obj)
+    //serialize to send
+    friend QDataStream &operator<<(QDataStream &ds, AbstractEndpoint *obj)
+    {
+       //ds<<(qint16)obj->getId();
+
+       return ds;
+    }
+
+    //deserialize from telegram
+    //friend QDataStream &ScheduleEvent::operator>>(QDataStream &in,AbstractEndpoint *sEvent)
+    friend QDataStream &operator>>(QDataStream &in,AbstractEndpoint *sEvent)
+    {
+       //qint16 id;
+       //in>>id;
+       //set corresponding attributes in current object
+
+       return in;
+    }
+
 signals:
  void signalUpdateEndpoint();
 public slots:
