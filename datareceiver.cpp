@@ -1,6 +1,7 @@
 #include "datareceiver.h"
 #include <../HomeAutomationServer/HomeAutomation-Network/messagetype.h>
 #include <MainScreenWidget.h>
+#include <memory>
 
 DataReceiver* DataReceiver::_instance = NULL;
 
@@ -78,7 +79,7 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
 
 void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     QString alias, MAC, endpointType, state, connected, autoControlled, stateChangePending;
-    QList<AbstractEndpoint*> endpointsUpdate;
+    QList<std::shared_ptr<AbstractEndpoint>> endpointsUpdate;
     //0x1F = unit separator
     QList<QByteArray> payloadParts = payload.split(0x1F);
 
@@ -101,14 +102,14 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
                 stateChangePending = payloadParts.at(i + 6);
                 //ToDo turn into stack-variable
 
-                //emit signalReceivedEndpointInfos(alias, endpointType, MAC);
-
+                //emit signalReceivedEndpointInfos(alias, endpointType, MAC);                
                 Endpoint* newEndpoint = new Endpoint(alias, endpointType, MAC);
                 newEndpoint->setState(state == "1");
                 newEndpoint->setAutoMode(autoControlled == "1");
                 newEndpoint->setConnected(connected == "1");
                 newEndpoint->setStateChangePending(stateChangePending == "1");
-                endpointsUpdate.append(newEndpoint);
+                std:shared_ptr<AbstractEndpoint> sEndpoint(newEndpoint);
+                endpointsUpdate.append(sEndpoint);
             }
             else if (payloadParts.length() == 1){
                 //Empty list of endpoint states

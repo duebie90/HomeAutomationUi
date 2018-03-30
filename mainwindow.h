@@ -14,7 +14,7 @@
 #include <client.h>
 #include <datatransmitter.h>
 #include <MainScreenWidget.h>
-
+#include <memory>
 namespace Ui {
 class MainWindow;
 }
@@ -27,13 +27,13 @@ protected:
 public:
     explicit MainWindow(Client* client, QWidget *parent = 0);
     ~MainWindow();
-    QMap<QString, AbstractEndpoint*> getEndpointsMap();
+    QMap<QString, std::shared_ptr<AbstractEndpoint>> getEndpointsMap();
 private slots:
     void slotConnect(bool);
     void slotConnected();
     void slotDisconnected();
     //void slotReceivedData(QString message);
-    void slotReceivedEndpointList(QList<AbstractEndpoint*> endpointsUpdate);
+    void slotReceivedEndpointList(QList<std::shared_ptr<AbstractEndpoint>> endpointsUpdate);
     void slotReceivedEndpointInfos(QString,QString,QString);
     void slotReceivedEndpointSchedules(QList<ScheduleEvent*> schedulesList, QString MAC);
     void slotRequestStateChange(QString MAC, bool state);
@@ -56,18 +56,18 @@ private:
     //ToDo: move to an appropriate Class
     void parseBasicEndpointInfo(QString message);
     void addEndpoint(QString alias, QString type, QString MAC);
-    void updateMainScreen(QList<AbstractEndpoint*> endpointsUpdate);
+    void updateMainScreen(QList<std::shared_ptr<AbstractEndpoint>> endpointsUpdate);
 
     Ui::MainWindow *ui;
     Client* client;
     QStandardItemModel* tableDataModel;
     QTableView* endpointsTable;
-    QMap<QString, AbstractEndpoint*> mapMac2endpoints;
+    QMap<QString, std::shared_ptr<AbstractEndpoint>> mapMac2endpoints;
     DataTransmitter* dataTransmitter;    
     MainScreenWidget* mainQmlScreen;
     bool firstUpdateSinceConnect;
     // DEBUG ONLY
-    AbstractEndpoint* heatingEndpointTest;
+    std::shared_ptr<AbstractEndpoint> heatingEndpointTest;
     //
 
 };

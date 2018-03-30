@@ -1,6 +1,7 @@
 #include "EndpointOverviewScreen.h"
 #include <QObject>
 #include <../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.h>
+#include <memory>
 
 EndpointOverviewScreen::EndpointOverviewScreen(QObject* parent):
     AbstractScreenController(parent),

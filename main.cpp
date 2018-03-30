@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
     QObject::connect(client, SIGNAL(signalReceivedData(QByteArray)), dataReceiver, SLOT(slotReceivedData(QByteArray)));
 
     //connections from DataReceiver to MainWindow
-    QObject::connect(dataReceiver, SIGNAL(signalReceivedEndpointList(QList<AbstractEndpoint*>)),
-                     &mainWindow, SLOT(slotReceivedEndpointList(QList<AbstractEndpoint*>)));
+    QObject::connect(dataReceiver, SIGNAL(signalReceivedEndpointList(QList<std::shared_ptr<AbstractEndpoint>> )),
+                     &mainWindow, SLOT(slotReceivedEndpointList(QList<std::shared_ptr<AbstractEndpoint>>)));
 
     QObject::connect(dataReceiver, SIGNAL(signalReceivedEndpointInfos(QString,QString,QString)),
                      &mainWindow, SLOT(slotReceivedEndpointInfos(QString,QString,QString)));

@@ -5,7 +5,7 @@
 #include <endpoint.h>
 #include <AbstractEndpoint.h>
 #include <../HomeAutomationServer/HomeAutomation-Network/messagetype.h>
-
+#include <memory>
 
 class DataReceiver: public QObject
 {
@@ -15,7 +15,7 @@ public:
 public slots:
     void slotReceivedData(QByteArray data);
 signals:
-    void signalReceivedEndpointList(QList<AbstractEndpoint*> endpointsUpdate);
+    void signalReceivedEndpointList(QList<std::shared_ptr<AbstractEndpoint>> endpointsUpdate);
     void signalReceivedEndpointInfos(QString alias, QString type, QString mac);
     void signalReceivedEndpointSchedules(QList<ScheduleEvent*> schedulesUpdate, QString MAC);
     //...
