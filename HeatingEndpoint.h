@@ -29,7 +29,7 @@ private:
     float boiler_temp;
     float target_vorlauf_temp;
     float vorlauf_temp;
-
+    void serialize(QDataStream &ds);
 
 };
 

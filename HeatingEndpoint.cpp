@@ -14,6 +14,10 @@ HeatingEndpoint::HeatingEndpoint(QString alias, QString type, QString MAC,
 //{
 
 //}
+void HeatingEndpoint::serialize(QDataStream &ds){
+
+}
+
 
 void HeatingEndpoint::copyEndpoint(HeatingEndpoint* otherEndpoint){
     //Endpoint::copyEndpoint(otherEndpoint);

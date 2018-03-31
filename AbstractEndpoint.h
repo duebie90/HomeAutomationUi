@@ -30,13 +30,14 @@ public:
     virtual QString getType();
     virtual bool getState();
     virtual void setState(bool);
+    virtual void serialize(QDataStream &ds) = 0;
 
     //friend QDataStream &ScheduleEvent::operator<<(QDataStream &ds, AbstractEndpoint *obj)
     //serialize to send
     friend QDataStream &operator<<(QDataStream &ds, AbstractEndpoint *obj)
     {
-       //ds<<(qint16)obj->getId();
-
+       //write serialized class on data stream
+       obj->serialize(ds);
        return ds;
     }
 

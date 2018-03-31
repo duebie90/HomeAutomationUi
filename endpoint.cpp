@@ -23,6 +23,10 @@ Endpoint::Endpoint(QString alias, QString type, QString MAC, QObject* parent):
     this->checkedWeekdays = {false, false, false, false, false, false, false};
 }
 
+void Endpoint::serialize(QDataStream &ds){
+
+}
+
 void Endpoint::copyEndpoint(Endpoint *otherEndpoint)
 {
     this->alias = otherEndpoint->getAlias();

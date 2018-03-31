@@ -80,6 +80,8 @@ private:
     QTimer* pendingRequestTimeoutTimer;
      bool stateChangeRequestPending;    
      bool requestedState;
+     void serialize(QDataStream &ds);
+
 
 };
 
