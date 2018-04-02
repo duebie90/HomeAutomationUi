@@ -108,7 +108,7 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
                 newEndpoint->setAutoMode(autoControlled == "1");
                 newEndpoint->setConnected(connected == "1");
                 newEndpoint->setStateChangePending(stateChangePending == "1");
-                std:shared_ptr<AbstractEndpoint> sEndpoint(newEndpoint);
+                std::shared_ptr<AbstractEndpoint> sEndpoint(newEndpoint);
                 endpointsUpdate.append(sEndpoint);
             }
             else if (payloadParts.length() == 1){
@@ -120,6 +120,23 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
         }
         emit signalReceivedEndpointList(endpointsUpdate);
         break;
+    case MESSAGETYPE_ENDPOINTS_LIST: {
+        //all schedules of one endpoint are updated
+        quint8 endpointsCount;
+        int i = 0;
+        //QList<ScheduleEvent*> schedulesUpdate;
+        QDataStream in(&payload, QIODevice::ReadOnly);
+        in>>endpointsCount;
+        while(!in.atEnd() && i<endpointsCount) {
+            QString endpointType;
+            AbstractEndpoint* newEndpoint = getEndpointFromType(endpointType);
+            in>>newEndpoint;
+            std::shared_ptr<AbstractEndpoint> sEndpoint(newEndpoint);
+            endpointsUpdate.append(sEndpoint);
+            i++;
+        }
+    }
+
     case MESSAGETYPE_ENDPOINTS_SCHEDULES_LIST: {
         //all schedules of one endpoint are updated
         quint8 schedulesCount;
@@ -140,6 +157,17 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     default:
         qDebug()<<__FUNCTION__<<"Unrecognized MessageType";
     }
+}
+
+AbstractEndpoint* DataReceiver::getEndpointFromType(QString type){
+    if(type == "HeatingEndpoint") {
+        return new HeatingEndpoint();
+    }else if(type == "SwitchBox"){
+        return new Endpoint();
+    }else{
+        return new Endpoint();
+    }
+
 }
 
 

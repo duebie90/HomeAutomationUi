@@ -4,6 +4,8 @@
 #include <QObject>
 #include <endpoint.h>
 #include <AbstractEndpoint.h>
+#include <HeatingEndpoint.h>
+#include <SwitchboxEndpoint.h>
 #include <../HomeAutomationServer/HomeAutomation-Network/messagetype.h>
 #include <memory>
 
@@ -26,6 +28,8 @@ private:
     static DataReceiver* _instance;
     int processProtocollHeader(QByteArray data);
     void processMessage(MessageType type, QByteArray message);
+    //ToDo: create object factory for that task
+    AbstractEndpoint* getEndpointFromType(QString type);
 
 };
 
