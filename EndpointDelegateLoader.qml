@@ -96,7 +96,8 @@ Item {
         console.log("setModelData endpoint.alias" + root.endpoint.name)
         console.log("root.shown/ x :" + root.shown + "/ " + root.x)
         console.log("root.visible: " + root.visible)
-
+        console.log("root.autoMode: " + root.endpoint.autoMode)
+        console.log("root.influx_temp: " + root.endpoint.influx_temp)
     }
 
     Loader{

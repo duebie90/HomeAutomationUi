@@ -107,8 +107,8 @@ Item {
                         anchors.rightMargin:20
                         anchors.verticalCenter: parent.verticalCenter
                         font.pixelSize: 15
-                        text: "45°C"
-                        width: 50
+                        text:  Number(root.endpoint.influx_temp).toLocaleString(Qt.locale("de_DE"))
+                        width: 70
                         readOnly: true
                     }
                 }
@@ -134,7 +134,7 @@ Item {
                         anchors.leftMargin: 10
                         anchors.verticalCenter: parent.verticalCenter
                         font.pixelSize: 15
-                        text:"45°C"
+                        text: root.endpoint.target_influx_temp
                         color:"green"
                     }
                 }
@@ -144,7 +144,7 @@ Item {
                     anchors.topMargin:20
                     width: 150
                     text:"Solltemperatur ändern"
-                    onSignalClicked: editSchedulesScreen.show()
+                    onSignalClicked: root.endpoint.set_target_influx_temp(heaterTargetInfluxTemp.text)
                 }
             }
         }
@@ -183,8 +183,8 @@ Item {
                         anchors.right: parent.right
                         anchors.rightMargin:20
                         font.pixelSize: 15
-                        text: "75°C"
-                        width: 50
+                        text:  Number(root.endpoint.boiler_temp).toLocaleString(Qt.locale("de_DE"))
+                        width: 70
                         readOnly: true
                     }
                 }
