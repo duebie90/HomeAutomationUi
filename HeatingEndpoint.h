@@ -37,6 +37,7 @@ private:
     int target_influx_temp;
     float influx_temp;
     void serialize(QDataStream &ds);
+    void unserialize(QDataStream &ds);
 
 };
 

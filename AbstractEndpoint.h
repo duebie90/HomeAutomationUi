@@ -29,8 +29,7 @@ public:
     QString getMAC();
     virtual QString getType();
     virtual bool getState();
-    virtual void setState(bool);
-    virtual void serialize(QDataStream &ds) = 0;
+    virtual void setState(bool);    
 
     //friend QDataStream &ScheduleEvent::operator<<(QDataStream &ds, AbstractEndpoint *obj)
     //serialize to send
@@ -43,12 +42,12 @@ public:
 
     //deserialize from telegram
     //friend QDataStream &ScheduleEvent::operator>>(QDataStream &in,AbstractEndpoint *sEvent)
-    friend QDataStream &operator>>(QDataStream &in,AbstractEndpoint *sEvent)
+    friend QDataStream &operator>>(QDataStream &in,AbstractEndpoint *obj)
     {
        //qint16 id;
        //in>>id;
        //set corresponding attributes in current object
-
+       obj->unserialize(in);
        return in;
     }
 
@@ -64,6 +63,8 @@ private:
     QString MAC;
     bool connected;
     bool state;
+    virtual void serialize(QDataStream &ds) = 0;
+    virtual void unserialize(QDataStream &ds) = 0;
 };
 
 #endif // ABSTRACTENDPOINT_H

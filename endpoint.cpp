@@ -24,7 +24,21 @@ Endpoint::Endpoint(QString alias, QString type, QString MAC, QObject* parent):
 }
 
 void Endpoint::serialize(QDataStream &ds){
+    ds<<this->getAlias();
+    ds<<this->getMAC();
+    ds<<this->getState();
+    ds<<this->isAutoOn();
+    ds<<this->isConnected();
+    ds<<this->isStateChangePending();
+}
 
+void Endpoint::unserialize(QDataStream &ds){
+    ds<<this->getAlias();
+    ds<<this->getMAC();
+    ds<<this->getState();
+    ds<<this->isAutoOn();
+    ds<<this->isConnected();
+    ds<<this->isStateChangePending();
 }
 
 void Endpoint::copyEndpoint(Endpoint *otherEndpoint)

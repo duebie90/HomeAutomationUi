@@ -21,6 +21,10 @@ void HeatingEndpoint::serialize(QDataStream &ds){
 
 }
 
+void HeatingEndpoint::unserialize(QDataStream &ds){
+
+}
+
 
 void HeatingEndpoint::copyEndpoint(HeatingEndpoint* otherEndpoint){
     //Endpoint::copyEndpoint(otherEndpoint);

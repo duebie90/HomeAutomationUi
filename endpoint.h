@@ -81,7 +81,9 @@ private:
      bool stateChangeRequestPending;    
      bool requestedState;
      void serialize(QDataStream &ds);
-
+     void unserialize(QDataStream &ds);
+   //unserialize
+//in>>id>>date>>start>>end>>repetition>>type>>weekdays;
 
 };
 

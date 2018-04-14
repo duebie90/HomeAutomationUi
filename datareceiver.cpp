@@ -164,6 +164,7 @@ AbstractEndpoint* DataReceiver::getEndpointFromType(QString type){
         return new HeatingEndpoint();
     }else if(type == "SwitchBox"){
         return new Endpoint();
+        //return new SwitchboxEndpoint();
     }else{
         return new Endpoint();
     }
