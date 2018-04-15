@@ -33,12 +33,20 @@ void Endpoint::serialize(QDataStream &ds){
 }
 
 void Endpoint::unserialize(QDataStream &ds){
-    ds<<this->getAlias();
-    ds<<this->getMAC();
-    ds<<this->getState();
-    ds<<this->isAutoOn();
-    ds<<this->isConnected();
-    ds<<this->isStateChangePending();
+    QString alias;
+    QString mac;
+    bool state;
+    bool autoOn;
+    bool connected;
+    bool stateChangePending;
+    ds>>alias>>mac>>state>>autoOn>>connected>>stateChangePending;
+
+    this->alias = alias;
+    this->MAC = mac;
+    this->setState(state);
+    this->setAutoMode(autoOn);
+    this->setConnected(connected);
+    this->setStateChangePending(stateChangePending);
 }
 
 void Endpoint::copyEndpoint(Endpoint *otherEndpoint)

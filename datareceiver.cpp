@@ -125,16 +125,18 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
         quint8 endpointsCount;
         int i = 0;
         //QList<ScheduleEvent*> schedulesUpdate;
-        QDataStream in(&payload, QIODevice::ReadOnly);
-        in>>endpointsCount;
-        while(!in.atEnd() && i<endpointsCount) {
-            QString endpointType;
+        QDataStream in(&payload, QIODevice::ReadOnly);        
+        in>>endpointsCount;                
+        while(!in.atEnd() && i<endpointsCount) {            
+            in>>endpointType;
             AbstractEndpoint* newEndpoint = getEndpointFromType(endpointType);
             in>>newEndpoint;
             std::shared_ptr<AbstractEndpoint> sEndpoint(newEndpoint);
             endpointsUpdate.append(sEndpoint);
             i++;
         }
+        emit signalReceivedEndpointList(endpointsUpdate);
+        break;
     }
 
     case MESSAGETYPE_ENDPOINTS_SCHEDULES_LIST: {
