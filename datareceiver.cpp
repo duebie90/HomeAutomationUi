@@ -57,7 +57,7 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
     } else {
         return -2;
     }
-    if (messageType != MESSAGETYPE_ENDPOINTS_SCHEDULES_LIST) {
+    if (messageType != MESSAGETYPE_ENDPOINTS_SCHEDULES_LIST && messageType != MESSAGETYPE_ENDPOINTS_LIST) {
         payload = splitOfPayload.split(0x03).at(0);
         //check payload length
         if (payload.length() != payloadLength) {

@@ -26,8 +26,11 @@ public:
     virtual bool isConnected();
     virtual void setConnected(bool connected);
     QString getAlias();
+    void setAlias(QString);
     QString getMAC();
-    virtual QString getType();
+    void setMAC(QString);
+    QString getType();
+    void setType(QString);
     virtual bool getState();
     virtual void setState(bool);    
 

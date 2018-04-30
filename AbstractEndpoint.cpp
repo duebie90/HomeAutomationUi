@@ -30,12 +30,24 @@ QString AbstractEndpoint::getAlias(){
     return this->alias;
 }
 
+void AbstractEndpoint::setAlias(QString alias){
+    this->alias = alias;
+}
+
 QString AbstractEndpoint::getMAC(){
     return this->MAC;
 }
 
+void AbstractEndpoint::setMAC(QString mac){
+    this->MAC = mac;
+}
+
 QString AbstractEndpoint::getType(){
     return this->type;
+}
+
+void AbstractEndpoint::setType(QString type){
+    this->type = type;
 }
 
 void AbstractEndpoint::setState(bool state){

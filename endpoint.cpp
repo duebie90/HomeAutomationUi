@@ -4,7 +4,7 @@
 #include <MainScreenWidget.h>
 #include <QDataStream>
 
-#define WAITING_UPDATE_TIMEOUT 1000 //ms
+#define WAITING_UPDATE_TIMEOUT 2000 //ms
 
 Endpoint::Endpoint(QString alias, QString type, QString MAC, QObject* parent):
     AbstractEndpoint(alias, type, MAC, parent),
@@ -14,11 +14,7 @@ Endpoint::Endpoint(QString alias, QString type, QString MAC, QObject* parent):
     pendingRequestTimeoutTimer(new QTimer()),
     qmlpath("EndpointWidget.qml")
 {    
-    this->alias = alias;
-    this->type = type;
-    this->MAC = MAC;
     this->state = false;
-
     connect(this->pendingRequestTimeoutTimer, SIGNAL(timeout()), this, SLOT(slotPendingRequestNoUpdateTimerTimeout()));
     this->checkedWeekdays = {false, false, false, false, false, false, false};
 }
@@ -41,21 +37,21 @@ void Endpoint::unserialize(QDataStream &ds){
     bool stateChangePending;
     ds>>alias>>mac>>state>>autoOn>>connected>>stateChangePending;
 
-    this->alias = alias;
-    this->MAC = mac;
+    setAlias(alias);
+    setMAC(mac);
+    this->setStateChangePending(stateChangePending);
     this->setState(state);
     this->setAutoMode(autoOn);
-    this->setConnected(connected);
-    this->setStateChangePending(stateChangePending);
+    this->setConnected(connected);    
 }
 
-void Endpoint::copyEndpoint(Endpoint *otherEndpoint)
-{
-    this->alias = otherEndpoint->getAlias();
-    this->type = otherEndpoint->getType();
-    this->MAC = otherEndpoint->getMAC();
-    this->state = otherEndpoint->getState();
-}
+//void Endpoint::copyEndpoint(Endpoint *otherEndpoint)
+//{
+//    this->alias = otherEndpoint->getAlias();
+//    this->type = otherEndpoint->getType();
+//    this->MAC = otherEndpoint->getMAC();
+//    this->state = otherEndpoint->getState();
+//}
 
 QMap<int, ScheduleEvent*> Endpoint::getScheduledEvents()
 {
@@ -233,8 +229,10 @@ void Endpoint::scheduleIntervallChosen(int index)
 void Endpoint::slotPendingRequestNoUpdateTimerTimeout()
 {
     this->stateChangeRequestPending = false;
-    // Reset Switch state to the state before request by use
-    this->setState(!this->requestedState);
+    // Reset Switch state to the state before request by user
+    if(getState() != this->requestedState){
+        this->setState(!this->requestedState);
+    }
 }
 
 bool Endpoint:: isConnected() {
@@ -245,15 +243,6 @@ void Endpoint::setConnected(bool connected){
     emit signalUpdateEndpoint();
 }
 
-QString Endpoint::getAlias() {
-    return alias;
-}
-QString Endpoint::getType() {
-    return type;
-}
-QString Endpoint::getMAC() {
-    return MAC;
-}
 bool Endpoint::getState() {
     return this->state;
 }

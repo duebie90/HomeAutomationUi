@@ -22,12 +22,12 @@ class Endpoint: public AbstractEndpoint
 
 public:
     Endpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
-    virtual void copyEndpoint(Endpoint* otherEndpoint);
+    //virtual void copyEndpoint(Endpoint* otherEndpoint);
     bool isConnected();
     void setConnected(bool connected);
-    QString getAlias();
-    QString getType();
-    QString getMAC();
+    //QString getAlias();
+    //QString getType();
+    //QString getMAC();
     void setState(bool state);
     bool getState();
     void setStateChangePending(bool pending);
@@ -67,9 +67,9 @@ private slots:
 protected:
     QString qmlpath;
 private:
-    QString alias;
-    QString type;
-    QString MAC;    
+    //QString alias;
+    //QString type;
+    //QString MAC;
     bool state;
     bool connected;
     bool autoMode;    
