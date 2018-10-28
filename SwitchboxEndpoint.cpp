@@ -1,6 +1,6 @@
 #include "SwitchboxEndpoint.h"
 
-SwitchboxEndpoint::SwitchboxEndpoint(QString alias, QString type, QString MAC, QObject* parent):
+SwitchboxEndpoint::SwitchboxEndpoint(QString alias, EndpointTypes type, QString MAC, QObject* parent):
     AbstractEndpoint(alias, type, MAC, parent),
     autoMode(false),
     chosenRepetitionType(ScheduleEvent::REPETITION_TYPE_WEEKLY),

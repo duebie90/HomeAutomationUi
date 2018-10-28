@@ -9,6 +9,7 @@
 #include <endpoint.h>
 #include <AbstractEndpoint.h>
 #include <HeatingEndpoint.h>
+#include <../HomeAutomationServer/HomeAutomation-Network/endpointtypes.h>
 
 #define EW_MAX_COLS 4
 
@@ -52,10 +53,10 @@ MainWindow::MainWindow(Client* client, QWidget *parent) :
     //cout<<settings.value("pos", QPoint(200, 200)).toString().toStdString();
     //settings.endGroup();    
 
-    std::shared_ptr<HeatingEndpoint> temp(new HeatingEndpoint("Heizung", "HeatingEndpoint", "FFFE"));
-    this->heatingEndpointTest = std::move(temp);
-    cout <<"BLA"<< this->heatingEndpointTest->getType().toStdString()<<endl;
-    this->mapMac2endpoints.insert(this->heatingEndpointTest->getMAC(), this->heatingEndpointTest);
+    //std::shared_ptr<HeatingEndpoint> temp(new HeatingEndpoint("Heizung", ENDPOINT_TYPE_HEATING, "FFFE"));
+    //this->heatingEndpointTest = std::move(temp);
+    //cout <<"BLA"<< QString::number(this->heatingEndpointTest->getType()).toStdString()<<endl;
+    //this->mapMac2endpoints.insert(this->heatingEndpointTest->getMAC(), this->heatingEndpointTest);
 }
 
 void MainWindow::slotConnect(bool) {
@@ -112,7 +113,7 @@ void MainWindow::slotReceivedEndpointInfos(QString alias,QString type,QString ma
 
 void MainWindow::slotReceivedEndpointList(QList<std::shared_ptr<AbstractEndpoint>> endpointsUpdate) {
 
-    endpointsUpdate.append(std::move(this->heatingEndpointTest));
+    //endpointsUpdate.append(std::move(this->heatingEndpointTest));
 
     QList<QString> endpointsUpdateMacs;
     bool endpointsListChanged = false;
@@ -121,12 +122,7 @@ void MainWindow::slotReceivedEndpointList(QList<std::shared_ptr<AbstractEndpoint
     foreach(std::shared_ptr<AbstractEndpoint> endpoint, endpointsUpdate) {
         if (!this->mapMac2endpoints.keys().contains(endpoint->getMAC())) {
             //create a new one as a copy of the "update Endpoint"
-//            Endpoint* newEndpoint = new Endpoint(endpoint->getAlias(), endpoint->getType(), endpoint->getMAC());
-//            newEndpoint->setState(endpoint->getState());
-//            newEndpoint->setConnected( endpoint->isConnected());
-//            newEndpoint->setAutoMode(static_cast<Endpoint*>(endpoint)->isAutoOn());
-//            newEndpoint->setStateChangePending(static_cast<Endpoint*>(endpoint)->isStateChangePending());
-            AbstractEndpoint* newEndpoint(endpoint.get());
+            AbstractEndpoint* newEndpoint = endpoint.get();
             this->mapMac2endpoints.insert(endpoint->getMAC(), endpoint);
             connect(newEndpoint, SIGNAL(signalSendScheduleUpdate(QString,ScheduleEvent*)),
                     this, SLOT(slotSendEndpointScheduleUpdate(QString,ScheduleEvent*)));
@@ -137,13 +133,32 @@ void MainWindow::slotReceivedEndpointList(QList<std::shared_ptr<AbstractEndpoint
             endpointsListChanged = true;
         }
         else {
-            Endpoint* endpoint2Update = static_cast<Endpoint*>(this->mapMac2endpoints.value(endpoint->getMAC()).get());
-            if (endpoint2Update != NULL) {
-                //do the update stuff                
-                endpoint2Update->setState( static_cast<Endpoint*>(endpoint.get())->getState());
-                endpoint2Update->setConnected( endpoint->isConnected());
-                endpoint2Update->setAutoMode(static_cast<Endpoint*>(endpoint.get())->isAutoOn());
-                endpoint2Update->setStateChangePending(static_cast<Endpoint*>(endpoint.get())->isStateChangePending());
+            AbstractEndpoint* endpoint2Update = this->mapMac2endpoints.value(endpoint->getMAC()).get();
+            //generic alternative
+
+
+            if (endpoint2Update != nullptr) {
+//                QByteArray payload;
+//                QDataStream buffer(&payload, QIODevice::ReadWrite);
+//                buffer<<endpoint.get();
+//                buffer>>endpoint2Update;
+                if(endpoint2Update->getType() == EndpointTypes::ENDPOINT_TYPE_HEATING){
+                    HeatingEndpoint* endpoint2UpdateAfterCast = static_cast<HeatingEndpoint*>(endpoint2Update);
+                    endpoint2UpdateAfterCast->set_boiler_temp(static_cast<HeatingEndpoint*>(endpoint.get())->get_boiler_temp());
+                    endpoint2UpdateAfterCast->set_influx_temp(static_cast<HeatingEndpoint*>(endpoint.get())->get_influx_temp());
+                }else{
+                    //Endpoint Type Switchbox
+                    Endpoint* endpoint2UpdateAfterCast = static_cast<Endpoint*>(endpoint2Update);
+                    endpoint2UpdateAfterCast->setState( static_cast<Endpoint*>(endpoint.get())->getState());
+                    endpoint2UpdateAfterCast->setConnected( endpoint->isConnected());
+                    endpoint2UpdateAfterCast->setAutoMode(static_cast<Endpoint*>(endpoint.get())->isAutoOn());
+                    endpoint2UpdateAfterCast->setStateChangePending(static_cast<Endpoint*>(endpoint.get())->isStateChangePending());
+                }
+
+                //do the update stuff
+
+                //QDataStream ds(endpoint.get());
+
             }
         }
         endpointsUpdateMacs.append(endpoint->getMAC());

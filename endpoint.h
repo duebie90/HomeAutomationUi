@@ -6,6 +6,7 @@
 #include <AbstractEndpoint.h>
 #include <iostream>
 #include <../HomeAutomationServer/HomeAutomation-Devices/ScheduleEvent.h>
+#include <../HomeAutomationServer/HomeAutomation-Network/endpointtypes.h>
 using namespace std;
 
 class Endpoint: public AbstractEndpoint
@@ -21,7 +22,7 @@ class Endpoint: public AbstractEndpoint
     Q_PROPERTY(QVariant schedules READ getSchedulesObjectList NOTIFY signalSchedulesChanged)
 
 public:
-    Endpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
+    Endpoint(QString alias="", EndpointTypes type=ENDPOINT_TYPE_SWITCHBOX, QString MAC="", QObject* parent=0);
     //virtual void copyEndpoint(Endpoint* otherEndpoint);
     bool isConnected();
     void setConnected(bool connected);
@@ -39,12 +40,7 @@ public:
     void updateSchedules(QList<ScheduleEvent*> schedules);
     void addSchedule(ScheduleEvent::RepetitionType, QTime startTime, QTime endtime, QList<bool>weekdaysList=QList<bool>());
     Q_INVOKABLE void removeSchedule(ScheduleEvent* event);
-    Q_INVOKABLE void remove();
-    enum EndpointType {
-        switchbox,
-        temperatureSensor,
-        lightSwitch
-    };
+    Q_INVOKABLE void remove();    
     Q_INVOKABLE void requestStateChange(bool state);
     Q_INVOKABLE void requestAutoMode(bool autoMode);
     Q_INVOKABLE void changeAutoState(bool state);

@@ -6,7 +6,7 @@
 
 #define WAITING_UPDATE_TIMEOUT 2000 //ms
 
-Endpoint::Endpoint(QString alias, QString type, QString MAC, QObject* parent):
+Endpoint::Endpoint(QString alias, EndpointTypes type, QString MAC, QObject* parent):
     AbstractEndpoint(alias, type, MAC, parent),
     autoMode(false),
     chosenRepetitionType(ScheduleEvent::REPETITION_TYPE_WEEKLY),

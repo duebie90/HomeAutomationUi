@@ -43,7 +43,8 @@ HEADERS  += mainwindow.h \
     StartScreenController.h \
     HeatingEndpoint.h \
     AbstractEndpoint.h \
-    SwitchboxEndpoint.h
+    SwitchboxEndpoint.h \
+    ../HomeAutomationServer/HomeAutomation-Network/endpointtypes.h
 
 FORMS    += mainwindow.ui \
     MainScreenWidget.ui

@@ -21,7 +21,7 @@ class SwitchboxEndpoint :public AbstractEndpoint
 
 public:
     //SwitchboxEndpoint();
-    SwitchboxEndpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
+    SwitchboxEndpoint(QString alias="", EndpointTypes type=ENDPOINT_TYPE_SWITCHBOX, QString MAC="", QObject* parent=0);
     void setState(bool state);
     bool getState();
     void setStateChangePending(bool pending);

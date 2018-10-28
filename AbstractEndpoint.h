@@ -5,6 +5,7 @@
 #include <QtNetwork>
 #include <iostream>
 #include <AbstractScreenController.h>
+#include <../HomeAutomationServer/HomeAutomation-Network/endpointtypes.h>
 
 class AbstractEndpoint : public AbstractScreenController
 {
@@ -15,22 +16,18 @@ class AbstractEndpoint : public AbstractScreenController
     Q_PROPERTY(QString qmlpath READ getQmlPath CONSTANT)
     Q_PROPERTY(bool connected READ isConnected NOTIFY signalUpdateEndpoint)
 
-public:
-    enum EndpointTypes{
-        SwitchboxEndpointType,
-        HeatingEndpointType
-    };
-    AbstractEndpoint(QString alias="", QString type="", QString MAC="", QObject* parent=0);
+public:    
+    AbstractEndpoint(QString alias="", EndpointTypes type=ENDPOINT_TYPE_SWITCHBOX, QString MAC="", QObject* parent=0);
     AbstractEndpoint();
     void copyEndpoint(AbstractEndpoint* otherEndpoint);
     virtual bool isConnected();
     virtual void setConnected(bool connected);
-    QString getAlias();
+    QString getAlias();    
     void setAlias(QString);
     QString getMAC();
     void setMAC(QString);
-    QString getType();
-    void setType(QString);
+    EndpointTypes getType();
+    void setType(EndpointTypes);
     virtual bool getState();
     virtual void setState(bool);    
 
@@ -62,7 +59,7 @@ private slots:
 
 private:
     QString alias;
-    QString type;
+    EndpointTypes type;
     QString MAC;
     bool connected;
     bool state;

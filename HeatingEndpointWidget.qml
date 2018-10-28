@@ -106,8 +106,9 @@ Item {
                         anchors.right: parent.right
                         anchors.rightMargin:20
                         anchors.verticalCenter: parent.verticalCenter
-                        font.pixelSize: 15
-                        text:  Number(root.endpoint.influx_temp).toLocaleString(Qt.locale("de_DE"))
+                        font.pixelSize: 15                        
+                        //text:  Number(root.endpoint.influx_temp).toLocaleString(Qt.locale("de_DE"))
+                        text:root.endpoint.influx_temp
                         width: 70
                         readOnly: true
                     }
@@ -128,7 +129,7 @@ Item {
                         color:"white"
 
                     }
-                    Text{
+                    TextField{
                         id:heaterTargetInfluxTemp
                         anchors.left: heaterTargetInfluxTempLabel.right
                         anchors.leftMargin: 10
@@ -183,7 +184,8 @@ Item {
                         anchors.right: parent.right
                         anchors.rightMargin:20
                         font.pixelSize: 15
-                        text:  Number(root.endpoint.boiler_temp).toLocaleString(Qt.locale("de_DE"))
+                        //text:  Number(root.endpoint.boiler_temp).toLocaleString(Qt.locale("de_DE"))
+                        text:root.endpoint.boiler_temp
                         width: 70
                         readOnly: true
                     }

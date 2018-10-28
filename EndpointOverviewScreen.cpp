@@ -87,15 +87,16 @@ void EndpointOverviewScreen::slotShownEndpointChanged(int index)
     //QStringList endpointSchedulesStringList;
     QList<QObject*> endpointsSchedulesObjectList;
     QList<ScheduleEvent*> schedules;
-    if(this->endpoints.at(index)->getType() != "HeatingEndpoint"){
+    if(this->endpoints.at(index)->getType() == ENDPOINT_TYPE_SWITCHBOX){
         schedules = static_cast<Endpoint*>(this->endpoints.at(index))->getScheduledEvents().values();
-    }
-    foreach(ScheduleEvent* event, schedules) {
-        //endpointSchedulesStringList.append(event->toString());
-        endpointsSchedulesObjectList.append( (QObject*)event);
-    }
-    if(getRootContext() != NULL) {
-        getRootContext()->setContextProperty("schedules", QVariant::fromValue(endpointsSchedulesObjectList));
+
+        foreach(ScheduleEvent* event, schedules) {
+            //endpointSchedulesStringList.append(event->toString());
+            endpointsSchedulesObjectList.append( (QObject*)event);
+        }
+        if(getRootContext() != NULL) {
+            getRootContext()->setContextProperty("schedules", QVariant::fromValue(endpointsSchedulesObjectList));
+        }
     }
     //rootContext->setContextProperty("schedules", endpointsSchedulestStringList);
     this->shownEndpointIndex = index;

@@ -1,5 +1,6 @@
 #include "datareceiver.h"
 #include <../HomeAutomationServer/HomeAutomation-Network/messagetype.h>
+#include <../HomeAutomationServer/HomeAutomation-Network/endpointtypes.h>
 #include <MainScreenWidget.h>
 #include <memory>
 
@@ -78,7 +79,8 @@ int DataReceiver::processProtocollHeader(QByteArray data) {
 }
 
 void DataReceiver::processMessage(MessageType type, QByteArray payload) {
-    QString alias, MAC, endpointType, state, connected, autoControlled, stateChangePending;
+    QString alias, MAC, state, connected, autoControlled, stateChangePending;
+    EndpointTypes endpointType;
     QList<std::shared_ptr<AbstractEndpoint>> endpointsUpdate;
     //0x1F = unit separator
     QList<QByteArray> payloadParts = payload.split(0x1F);
@@ -95,7 +97,7 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
             if(payloadParts.length() >= i+6) {
                 alias   =   payloadParts.at(i + 0);
                 MAC     =   payloadParts.at(i + 1);
-                endpointType = payloadParts.at(i + 2);
+                endpointType = (EndpointTypes)payloadParts.at(i + 2)[0];
                 state = payloadParts.at(i + 3);
                 connected = payloadParts.at(i + 4);
                 autoControlled = payloadParts.at(i + 5);
@@ -128,7 +130,9 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
         QDataStream in(&payload, QIODevice::ReadOnly);        
         in>>endpointsCount;                
         while(!in.atEnd() && i<endpointsCount) {            
-            in>>endpointType;
+            unsigned int type_int;
+            in>>type_int;
+            endpointType = (EndpointTypes)type_int;
             AbstractEndpoint* newEndpoint = getEndpointFromType(endpointType);
             in>>newEndpoint;
             std::shared_ptr<AbstractEndpoint> sEndpoint(newEndpoint);
@@ -161,10 +165,10 @@ void DataReceiver::processMessage(MessageType type, QByteArray payload) {
     }
 }
 
-AbstractEndpoint* DataReceiver::getEndpointFromType(QString type){
-    if(type == "HeatingEndpoint") {
+AbstractEndpoint* DataReceiver::getEndpointFromType(EndpointTypes type){
+    if(type == ENDPOINT_TYPE_HEATING) {
         return new HeatingEndpoint();
-    }else if(type == "SwitchBox"){
+    }else if(type == ENDPOINT_TYPE_SWITCHBOX){
         return new Endpoint();
         //return new SwitchboxEndpoint();
     }else{
